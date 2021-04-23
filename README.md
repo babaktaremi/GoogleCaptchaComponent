@@ -4,7 +4,7 @@ Implementation of google captcha as a blazor compoenent
 
 ## Getting Started
 
-### 1. Installing GraphQL.Tools
+### 1. Installing GoogleCaptchaComponent
 You can install GoogleCaptchaComponent with [NuGet Package Manager Console](https://www.nuget.org/packages/GoogleCaptchaComponent/):
 
     Install-Package GoogleCaptchaComponent
