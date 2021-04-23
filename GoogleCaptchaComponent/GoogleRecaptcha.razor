@@ -1,0 +1,50 @@
+﻿@using  System.ComponentModel
+@using GoogleCaptchaComponent.Configuration
+@using Microsoft.Extensions.Options
+@using Microsoft.JSInterop
+@inject IJSRuntime JS;
+@inject IOptions<CaptchaConfiguration> CaptchaConfiguration
+
+
+<div id="recaptcha_container"></div>
+
+<br />
+
+
+@code {
+    private int WidgetId;
+
+    public static string reCAPTCHA_response;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await JS.InvokeVoidAsync("loadScript", "https://www.google.com/recaptcha/api.js");
+
+        await JS.InvokeVoidAsync("loadScript", "_content/GoogleCaptchaComponent/Scripts/JsOfReCAPTCHA.js");
+
+        if (firstRender)
+        {
+            WidgetId = await JS.InvokeAsync<int>("render_recaptcha", DotNetObjectReference.Create(this), "recaptcha_container", CaptchaConfiguration.Value.SiteKey);
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    [JSInvokable, EditorBrowsable(EditorBrowsableState.Never)]
+    public void CallbackOnSuccess(string response)
+    {
+        reCAPTCHA_response = response;
+    }
+
+    [JSInvokable, EditorBrowsable(EditorBrowsableState.Never)]
+    public void CallbackOnExpired()
+    {
+    //...
+    }
+
+
+    private void ShowResponse()
+    {
+        reCAPTCHA_response = $"The response for the reCAPTCHA widget: {reCAPTCHA_response}";
+    }
+}
