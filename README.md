@@ -41,7 +41,7 @@ Add the following Componenet to the place where you need to use Google Captcha
 
       <GoogleRecaptcha></GoogleRecaptcha>
 
-### 6. VAlidation
+### 6. Validation
 
 for validation, check if GoogleRecaptcha.reCAPTCHA_response is null or empty like the following exmaple
 
@@ -55,3 +55,6 @@ for validation, check if GoogleRecaptcha.reCAPTCHA_response is null or empty lik
            //Captcha valid
         }
 ```
+
+### Main Source:
+https://stackoverflow.com/questions/66471037/how-to-integrate-google-recaptcha-v2-for-blazor-webassembly-with-an-asp-net-core
