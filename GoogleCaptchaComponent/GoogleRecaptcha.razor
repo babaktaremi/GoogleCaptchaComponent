@@ -12,7 +12,6 @@
 
 
 @code {
-    private string WidgetId;
 
     public static string reCAPTCHA_response;
 
@@ -24,7 +23,7 @@
 
         if (firstRender)
         {
-            WidgetId = await JS.InvokeAsync<string>("render_recaptcha", DotNetObjectReference.Create(this), "recaptcha_container", CaptchaConfiguration.Value.SiteKey);
+             await JS.InvokeVoidAsync("render_recaptcha", DotNetObjectReference.Create(this), "recaptcha_container", CaptchaConfiguration.Value.SiteKey);
         }
 
         await base.OnAfterRenderAsync(firstRender);

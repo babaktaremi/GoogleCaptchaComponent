@@ -4,6 +4,9 @@
     <TargetFramework>net5.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>Babak Taremi</Authors>
+    <Version>1.0.1</Version>
+    <Description>Simple Package for using google captcha in blazor</Description>
+    <PackageProjectUrl>https://github.com/babaktaremi/GoogleCaptchaComponent</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>
