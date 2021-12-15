@@ -34,6 +34,11 @@
 @using GoogleCaptchaComponent.Events
 @using GoogleCaptchaComponent.Services
  ```
+ then add the following code to ```index.html``` file at the end of the ```body``` tag
+ 
+ ```html
+<script src="_content/GoogleCaptchaComponent/Scripts/ScriptLoader.js"></script>
+```
  
  ## Usage
  first of all add the Captcha Component in the place that you need like this:
