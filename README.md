@@ -11,13 +11,13 @@
 
 ### Intallation
  
- ** Package Manager Console **
+ ### Package Manager Console 
  ```Install-Package GoogleCaptchaComponent -Version 2.0.0```
  
- **Dotnet CLI**
+ ### Dotnet CLI
  ```dotnet add package GoogleCaptchaComponent --version 2.0.0```
  
- ##Configuration
+ ###Configuration
  
  add the following code to ```Program.cs``` . You need to get a site Key from Google
  
