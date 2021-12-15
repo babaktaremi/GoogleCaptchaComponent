@@ -1,4 +1,4 @@
-### Features
+## Features
 
 ![](https://i.ibb.co/1zskmPX/Relazor-180x180.png)
 
@@ -9,7 +9,7 @@
 
 
 
-### Intallation
+## Intallation
  
  ### Package Manager Console 
  ```Install-Package GoogleCaptchaComponent -Version 2.0.0```
@@ -120,7 +120,7 @@ first I override the ```OnAfterRender``` method and register event handlers for 
 Note that you don't necessarily need  to wirte an eventHandler for ```TimeOutCallBack```
 the google captcha automatically renews the captcha for you. But if you need to do extra things you can use this event.
 
-###Give it a chance!###
+### Give it a chance!
 If you like this project and let me know what you think about it.
 
 
