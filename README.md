@@ -17,7 +17,7 @@
  ### Dotnet CLI
  ```dotnet add package GoogleCaptchaComponent --version 2.0.0```
  
- ###Configuration
+ ### Configuration
  
  add the following code to ```Program.cs``` . You need to get a site Key from Google
  
@@ -32,7 +32,7 @@
 @using GoogleCaptchaComponent.Services
  ```
  
- ##Usage
+ ## Usage
  first of all add the Captcha Component in the place that you need like this:
  
  ```razor
