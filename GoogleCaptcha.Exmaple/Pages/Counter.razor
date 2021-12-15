@@ -1,6 +1,8 @@
 ﻿@page "/counter"
-@using GoogleCaptchaComponent
-
+@using GoogleCaptchaComponent.Components
+@using GoogleCaptchaComponent.Events
+@using GoogleCaptchaComponent.Services
+@inject ICaptchaCallBackService callBackService
 <h1>Counter</h1>
 
 <p>Current count: @currentCount</p>
@@ -8,22 +10,30 @@
 <button class="btn btn-primary" @onclick="IncrementCount" disabled="@Disabled">Click me</button>
 
 @code {
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        callBackService.SuccessCallBack += SuccessCallBack;
+        callBackService.TimeOutCallBack+=TimeOutCallBack;
+
+        base.OnAfterRender(firstRender);
+    }
+
+    private void TimeOutCallBack(object? sender, CaptchaTimeOutEventArgs e)
+    {
+        Console.WriteLine("Captcha Time Out");
+    }
+
+    private void SuccessCallBack(object? sender, CaptchaSuccessEventArgs e)
+    {
+        Disabled = false;
+
+         base.StateHasChanged();
+    }
+
     private int currentCount = 0;
 
     private bool Disabled = true;
-
-    public void OnCaptchaChange()
-    {
-        if (string.IsNullOrEmpty(GoogleRecaptcha.reCAPTCHA_response))
-        {
-            Disabled = true;
-        }
-        else
-        {
-            Disabled = false;
-        }
-
-    }
 
     private void IncrementCount()
     {

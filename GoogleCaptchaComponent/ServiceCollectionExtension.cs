@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using GoogleCaptchaComponent.Configuration;
+﻿using GoogleCaptchaComponent.Configuration;
+using GoogleCaptchaComponent.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace GoogleCaptchaComponent
@@ -13,6 +9,9 @@ namespace GoogleCaptchaComponent
         public static IServiceCollection AddGoogleCaptcha(this IServiceCollection services,string siteKey)
         {
             services.Configure<CaptchaConfiguration>(o => o.SiteKey = siteKey);
+
+            services.AddScoped<ICaptchaCallBackService, CaptchaCallBackService>();
+
             return services;
         }
     }
