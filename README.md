@@ -2,10 +2,13 @@
 
 ![](https://i.ibb.co/1zskmPX/Relazor-180x180.png)
 
-- Supports Blazor Dependecy Injection
-- Simple to use
-- easy to style the captcha component
-- uses event invokation for validating captcha
+-Supports Blazor dependency Injection
+
+-Simple to use
+
+-Easy to style the captcha component
+
+-Uses event invocation for validating captcha
 
 
 
