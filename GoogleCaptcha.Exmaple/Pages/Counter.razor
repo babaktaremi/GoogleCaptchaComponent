@@ -1,7 +1,5 @@
 ﻿@page "/counter"
-@using GoogleCaptchaComponent.Components
-@using GoogleCaptchaComponent.Events
-@using GoogleCaptchaComponent.Services
+
 @inject ICaptchaCallBackService callBackService
 <h1>Counter</h1>
 
@@ -19,16 +17,28 @@
         base.OnAfterRender(firstRender);
     }
 
-    private void TimeOutCallBack(object? sender, CaptchaTimeOutEventArgs e)
+    private void TimeOutCallBack(object sender, CaptchaTimeOutEventArgs e)
     {
         Console.WriteLine("Captcha Time Out");
     }
 
-    private void SuccessCallBack(object? sender, CaptchaSuccessEventArgs e)
+    private void SuccessCallBack(object sender, CaptchaSuccessEventArgs e)
     {
         Disabled = false;
 
          base.StateHasChanged();
+    }
+
+    public void PostingToMyApi()
+    {
+        if (GoogleRecaptcha.IsCaptchaValidated())
+        {
+            //Posting to recaptcha
+        }
+        else
+        {
+            //Showing message that captcha is not valid
+        }
     }
 
     private int currentCount = 0;
