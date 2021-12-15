@@ -121,6 +121,6 @@ Note that you don't necessarily need  to wirte an eventHandler for ```TimeOutCal
 the google captcha automatically renews the captcha for you. But if you need to do extra things you can use this event.
 
 ### Give it a chance!
-If you like this project and let me know what you think about it.
+If you like this project give it a star. If you find any issues feel free to create issue. Your help is greatly appreciated so feel free to give me PRs
 
 
