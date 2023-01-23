@@ -1,13 +1,15 @@
 ﻿using System;
 
-namespace GoogleCaptchaComponent.Events
+namespace GoogleCaptchaComponent.Events;
+
+/// <summary>
+/// Fires on success captcha validation with given response by recaptcha.
+/// </summary>
+public  class CaptchaSuccessEventArgs:EventArgs
 {
-   public  class CaptchaSuccessEventArgs:EventArgs
+    public CaptchaSuccessEventArgs(string captchaResponse)
     {
-        public CaptchaSuccessEventArgs(string captchaResponse)
-        {
-            CaptchaResponse = captchaResponse;
-        }
-        public string CaptchaResponse { get;  }
+        CaptchaResponse = captchaResponse;
     }
+    public string CaptchaResponse { get;  }
 }

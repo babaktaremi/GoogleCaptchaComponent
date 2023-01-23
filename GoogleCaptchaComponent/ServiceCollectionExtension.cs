@@ -1,18 +1,22 @@
-﻿using GoogleCaptchaComponent.Configuration;
-using GoogleCaptchaComponent.Services;
+﻿using System;
+using GoogleCaptchaComponent.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace GoogleCaptchaComponent
+namespace GoogleCaptchaComponent;
+
+public static class ServiceCollectionExtension
 {
-   public static class ServiceCollectionExtension
+    /// <summary>
+    /// Add Needed reCaptcha services for blazor
+    /// </summary>
+    /// <param name="services"></param>
+    /// <param name="configuration">Site key received in developer console</param>
+    /// <returns></returns>
+    public static IServiceCollection AddGoogleCaptcha(this IServiceCollection services,Action<CaptchaConfiguration> configuration)
     {
-        public static IServiceCollection AddGoogleCaptcha(this IServiceCollection services,string siteKey)
-        {
-            services.Configure<CaptchaConfiguration>(o => o.SiteKey = siteKey);
+        services.Configure<CaptchaConfiguration>(configuration);
 
-            services.AddScoped<ICaptchaCallBackService, CaptchaCallBackService>();
-
-            return services;
-        }
+        return services;
     }
+
 }

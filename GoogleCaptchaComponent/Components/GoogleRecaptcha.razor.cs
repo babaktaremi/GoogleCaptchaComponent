@@ -1,50 +1,130 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using GoogleCaptchaComponent.Configuration;
 using GoogleCaptchaComponent.Events;
-using GoogleCaptchaComponent.Services;
+using GoogleCaptchaComponent.Exceptions;
+using GoogleCaptchaComponent.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Options;
 using Microsoft.JSInterop;
 
-namespace GoogleCaptchaComponent.Components
+namespace GoogleCaptchaComponent.Components;
+
+
+/// <summary>
+/// Main google captcha component to use in razor files
+/// </summary>
+public partial class GoogleRecaptcha
 {
-    public partial class GoogleRecaptcha
+
+
+    [Inject] public IJSRuntime Js { get; set; }
+    [Inject] internal IOptions<CaptchaConfiguration> CaptchaConfiguration { get; set; }
+
+    /// <summary>
+    /// Success captcha validation event
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<CaptchaSuccessEventArgs> SuccessCallBack { get; set; }
+
+    /// <summary>
+    /// captcha validation Timeout event
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<CaptchaTimeOutEventArgs> TimeOutCallBack { get; set; }
+
+    /// <summary>
+    ///  captcha validation error event
+    /// </summary>
+    [Parameter]
+    public EventCallback<CaptchaServerSideValidationErrorEventArgs> ServerValidationErrorCallBack { get; set; }
+
+    /// <summary>
+    /// Handler for implementing server side validation
+    /// </summary>
+    [Parameter]
+    public Func<ServerSideCaptchaValidationRequestModel, Task<ServerSideCaptchaValidationResultModel>> ServerSideValidationHandler { get; set; }
+
+    /// <summary>
+    /// Specified configuration in startup
+    /// </summary>
+    public CaptchaConfiguration CurrentConfiguration => CaptchaConfiguration.Value;
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        private static string _captchaResponse;
-
-        [Inject] public IJSRuntime Js { get; set; }
-        [Inject] public IOptions<CaptchaConfiguration> CaptchaConfiguration { get; set; }
-        [Inject] ICaptchaCallBackService CallbackService { get; set; }
-
-        protected override async Task OnAfterRenderAsync(bool firstRender)
-        {
+        if (CaptchaConfiguration.Value.CaptchaVersion == Configuration.CaptchaConfiguration.Version.V3)
+            await Js.InvokeVoidAsync("loadScript", $"https://www.google.com/recaptcha/api.js?render={CaptchaConfiguration.Value.SiteKey}");
+        else
             await Js.InvokeVoidAsync("loadScript", "https://www.google.com/recaptcha/api.js");
 
-            await Js.InvokeVoidAsync("loadScript", "_content/GoogleCaptchaComponent/Scripts/JsOfReCAPTCHA.js");
+        await Js.InvokeVoidAsync("loadScript", "_content/GoogleCaptchaComponent/Scripts/JsOfReCAPTCHA.js");
 
-            if (firstRender)
-            {
-                await Js.InvokeVoidAsync("render_recaptcha", DotNetObjectReference.Create(this), "recaptcha_container", CaptchaConfiguration.Value.SiteKey);
-            }
-
-            await base.OnAfterRenderAsync(firstRender);
-        }
-
-        [JSInvokable, EditorBrowsable(EditorBrowsableState.Never)]
-        public void CallbackOnSuccess(string response)
+        if (firstRender)
         {
-            _captchaResponse = response;
-            CallbackService.SuccessCallBack?.Invoke(this,new CaptchaSuccessEventArgs(response));
+
+            if (CaptchaConfiguration.Value.CaptchaVersion == Configuration.CaptchaConfiguration.Version.V2)
+                await Js.InvokeVoidAsync("render_recaptcha_v2", DotNetObjectReference.Create(this), "recaptcha_container", CaptchaConfiguration.Value.SiteKey);
+            else
+                await Js.InvokeVoidAsync("render_recaptcha_v3", DotNetObjectReference.Create(this), CaptchaConfiguration.Value.SiteKey);
         }
 
-        [JSInvokable, EditorBrowsable(EditorBrowsableState.Never)]
-        public void CallbackOnExpired()
-        {
-            CallbackService.TimeOutCallBack?.Invoke(this,new CaptchaTimeOutEventArgs());
-        }
-
-
-        public static bool IsCaptchaValidated() => !string.IsNullOrEmpty(_captchaResponse);
+        await base.OnAfterRenderAsync(firstRender);
     }
+
+    [JSInvokable, EditorBrowsable(EditorBrowsableState.Never)]
+    public virtual async Task CallbackOnSuccess(string response)
+    {
+        if (CaptchaConfiguration.Value.ServerSideValidationRequired)
+        {
+            if (ServerSideValidationHandler == null)
+                throw new CallBackDelegateException(
+                    $"Server side validation is set to true but there is no handler found for {nameof(ServerSideValidationHandler)}");
+
+            var serverSideValidationResult = await ServerSideValidationHandler(new ServerSideCaptchaValidationRequestModel(response));
+
+            if (!serverSideValidationResult.IsSuccess)
+            {
+                if (!ServerValidationErrorCallBack.HasDelegate)
+                    throw new CallBackDelegateException(
+                        $"Server side reCaptcha validation is failed but no handler found for {nameof(ServerValidationErrorCallBack)}");
+
+                await ServerValidationErrorCallBack.InvokeAsync(
+                    new CaptchaServerSideValidationErrorEventArgs(serverSideValidationResult.ValidationMessage));
+            }
+        }
+
+
+        if (!SuccessCallBack.HasDelegate)
+            throw new CallBackDelegateException(
+                $"no Callback handler found for {nameof(SuccessCallBack)}");
+
+        await SuccessCallBack.InvokeAsync(new CaptchaSuccessEventArgs(response));
+    }
+
+    [JSInvokable, EditorBrowsable(EditorBrowsableState.Never)]
+    public virtual async Task CallbackOnExpired()
+    {
+        if (!TimeOutCallBack.HasDelegate)
+            throw new CallBackDelegateException(
+                $"no Callback handler found for {nameof(TimeOutCallBack)}");
+
+        await InvokeAsync(StateHasChanged);
+
+        await TimeOutCallBack.InvokeAsync(new CaptchaTimeOutEventArgs("captcha validation expired"));
+    }
+
+    [JSInvokable, EditorBrowsable(EditorBrowsableState.Never)]
+    public virtual async Task CallBackError(string message)
+    {
+        if (!ServerValidationErrorCallBack.HasDelegate)
+            throw new CallBackDelegateException(
+                $"no Callback handler found for {nameof(ServerValidationErrorCallBack)}");
+
+        await InvokeAsync(StateHasChanged);
+
+        await ServerValidationErrorCallBack.InvokeAsync(new CaptchaServerSideValidationErrorEventArgs(message));
+    }
+
 }

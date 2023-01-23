@@ -15,9 +15,12 @@ window.loadScript = function (scriptPath) {
 
         if (scriptPath === "https://www.google.com/recaptcha/api.js") {
             script.src = scriptPath + "?render=explicit";
+        }
+   
+         
             script.async = true;
             script.defer = true;
-        }
+        
 
         script.src = scriptPath;
         script.type = "text/javascript";
