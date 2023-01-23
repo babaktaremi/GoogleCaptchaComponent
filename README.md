@@ -10,23 +10,32 @@
 
 -Uses event invocation for validating captcha
 
+-Supports both reCaptcha v2 And v3
 
 
 ## Intallation
  
  ### Package Manager Console 
- ```Install-Package GoogleCaptchaComponent -Version 2.0.0```
+ ```Install-Package GoogleCaptchaComponent -Version 3.0.0```
  
  ### Dotnet CLI
- ```dotnet add package GoogleCaptchaComponent --version 2.0.0```
+ ```dotnet add package GoogleCaptchaComponent --version 3.0.0```
  
  ### Configuration
  
  add the following code to ```Program.cs``` . You need to get a site Key from Google
  
  ```csharp
-   builder.Services.AddGoogleCaptcha("Your Site Key");
+ builder.Services.AddGoogleCaptcha(configuration =>
+        {
+            configuration.ServerSideValidationRequired = true; //If you don't need server side validation with secret key, set it to false
+            configuration.SiteKey = config;
+            configuration.CaptchaVersion = CaptchaConfiguration.Version.V2; // V3 is also the option now
+        });
  ```
+ 
+ Keep in mind that by setting ```CaptchaVersion``` to ```CaptchaConfiguration.Version.V3``` server side validation will be required and has to be implemented
+ 
  add the following code to ```_Imports.razor``` file
  
  ```razor
@@ -44,44 +53,37 @@
  first of all add the Captcha Component in the place that you need like this:
  
  ```razor
- <GoogleRecaptcha></GoogleRecaptcha>
+<GoogleRecaptcha 
+    SuccessCallBack="SuccessCallBack" 
+    TimeOutCallBack="TimeOutCallBack" 
+    ServerValidationErrorCallBack="ServerSideValidationError" 
+    ServerSideValidationHandler="ServerSideValidationHandler" >
+</GoogleRecaptcha>
+
  ```
- 
- 
- There Are two scenarios where you need to have a validated captcha:
- - Check captcha validation before posting information to an API
- - Do something right after the captcha is validated
- 
- for the first usage there is an Static Method in Google Captcha that you can use it like this:
+ ```SuccessCallBack``` event is fired when user has successfully validated captcha. If captcha version is ```V3``` or ```ServerSideValidationRequired``` is set to ```true``` than this event will be fired after successful validation of ```ServerSideValidationHandler```.After successful validation, response token of reCaptcha is available via ```CaptchaResponse``` propery of ```CaptchaSuccessEventArgs```. Code of this handler's event can be something like this:
+
  
  ```Csharp
-  public void PostingToMyApi()
+ void SuccessCallBack(CaptchaSuccessEventArgs e)
     {
-        if (GoogleRecaptcha.IsCaptchaValidated())
-        {
-            //Posting to API
-        }
-        else
-        {
-            //Showing message that captcha is not valid
-        }
+        Disabled = false; //Disable attribute of button becomes false
+
+         captchaResponse = e.CaptchaResponse;
+
+        base.StateHasChanged();
     }
  ```
- for the second usage you need to do a couple of things
  
- first inject the interface called ```ICaptchaCallBackService``` to your component. you can do like this
+ ```TimeOutCallBack``` is called when the validation time of reCaptcha response has expired. its handler code can be something like this
  
- in razor component:
- 
- ```razor
- @inject ICaptchaCallBackService callBackService
- ```
- 
- or in the code behind of the component like this
- 
- ```csharp
-  [Inject] 
-  ICaptchaCallBackService CallbackService { get; set; }
+  ```Csharp
+  void TimeOutCallBack(CaptchaTimeOutEventArgs e)
+    {
+        Disabled = true; //Button becomes disable again
+        Console.WriteLine($"Captcha Time Out with message {e.ErrorMessage}");
+        errorMessage = $"Captcha Timeout: {e.ErrorMessage}";
+    }
  ```
  
  there are two events named ```SuccessCallBack``` and ```TimeOutCallBack```
