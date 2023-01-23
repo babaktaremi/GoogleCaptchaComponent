@@ -118,9 +118,24 @@
  
  The return of this event (or better called funtion) is `Task<ServerSideCaptchaValidationResultModel>` . The Model `ServerSideCaptchaValidationResultModel` has two properties: 
  **`IsSuccess`** : Whether the result of server side validation was successful or not. if `true` the `SuccessCallBack` will be triggered. Otherwise `ServerValidationErrorCallBack` is triggered.
+ **`ValidationMessage`** : Message related to the server side validation result.
  
- **`ValidationMessage`** : Message related to the server side validation result. 
+ the argument `ServerSideCaptchaValidationRequestModel` is instantiated automatically and no further configuration is needed.
  
+ Code of this handler can be something like this:
+
+```csharp
+ /// <summary>
+ /// Captcha Verification Should be done by an internal api which holds the secret key
+ /// </summary>
+ /// <returns></returns>
+    private async Task<ServerSideCaptchaValidationResultModel> ServerSideValidationHandler(ServerSideCaptchaValidationRequestModel requestModel)
+    {
+        using var httpClient = new HttpClient();
+        var apiResult = await httpClient.GetFromJsonAsync<GoogleCaptchaCheckResponseResult>($"https://api.mysecurewebsite.com/VerifyCaptcha?token={requestModel.CaptchaResponse}");
+        return new ServerSideCaptchaValidationResultModel(apiResult.Success, string.Join("\n",apiResult.ErrorCodes ?? new List<string>(){"No Error"}));
+    }
+```
 
 ## Demo
 
