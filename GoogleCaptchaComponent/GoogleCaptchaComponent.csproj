@@ -12,6 +12,10 @@
     <PackageTags>blazor,blazor captcha, Net6, wasm, blazor google captcha,reCaptcha,blazor reCaptcha</PackageTags>
     <Title>Blazor Google Captcha Component</Title>
     <Product>$(AssemblyName)-Blazor</Product>
+	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
+	  <PackageReleaseNotes>This Release has a lot of breaking changes compared to previous version.
+Also support for reCaptcha v3 has been added</PackageReleaseNotes>
+	  <Copyright>Babak Taremi</Copyright>
   </PropertyGroup>
 
   <ItemGroup>
