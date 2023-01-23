@@ -7,8 +7,11 @@
 -Simple to use
 
 -Easy to style the captcha component
+
 -Uses event invocation for validating captcha
+
 -Supports both reCaptcha v2 And v3
+
 -Supports Server Side captcha response validation flow
 
 ## Release History
@@ -35,7 +38,6 @@
  dotnet add package GoogleCaptchaComponent --version 3.0.0
  ```
  
- 
  ## Configuration
  
  Add the following code to `Program.cs` . You need to get a site Key from Google
@@ -48,6 +50,7 @@
             configuration.CaptchaVersion = CaptchaConfiguration.Version.V2; // V3 is also the option now
         });
  ```
+ 
  If you don't need server side validation with secret key or have another way of captcha var set `ServerSideValidationRequired` to `false`
 
  Keep in mind that by setting `CaptchaVersion` to `CaptchaConfiguration.Version.V3` server side validation will be required and has to be implemented or it will throw `CallBackDelegateException`
@@ -113,14 +116,17 @@
  `ServerSideValidationHandler` is where you can chack the captcha's validity by secret key.
  
  ***Important*** : Never put secret in client code. Secret key must be stored in a safe place so that only your Internal trusted API can have access to it.
+ 
  ***Remember*** : This event must have a related handler if `ServerSideValidationRequired` property is set to `true` or `CaptchaVersion` is set to 
  `CaptchaConfiguration.Version.V3`. without handler it will throw `CallBackDelegateException`
  
  The return of this event (or better called funtion) is `Task<ServerSideCaptchaValidationResultModel>` . The Model `ServerSideCaptchaValidationResultModel` has two properties: 
+ 
  **`IsSuccess`** : Whether the result of server side validation was successful or not. if `true` the `SuccessCallBack` will be triggered. Otherwise `ServerValidationErrorCallBack` is triggered.
+ 
  **`ValidationMessage`** : Message related to the server side validation result.
  
- the argument `ServerSideCaptchaValidationRequestModel` is instantiated automatically and no further configuration is needed.
+ the argument `ServerSideCaptchaValidationRequestModel` is **automatically instantiated** and no further configuration is needed.
  
  Code of this handler can be something like this:
 
