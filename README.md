@@ -7,49 +7,66 @@
 -Simple to use
 
 -Easy to style the captcha component
-
 -Uses event invocation for validating captcha
-
 -Supports both reCaptcha v2 And v3
+-Supports Server Side captcha response validation flow
 
+## Release History
+
+**-V1:** : Experimental. Lots of bugs and **now depricated**
+
+**-V2:** : Major Bug Fixes. Interface clean up and added support for events in order to be more flexible and other devs can handle more customized scenarios. But this version also included some major bugs and the method provided for captcha validation wasn't so straight forward. Also the Server side validation flow using secret key was not present and users had to implement most of this feature themselves. **Depricated and no longer supported**
+
+**-V3 (Current):** : By far the best release. I finally found the time and energy to write in the way I want. API got a lot cleaner. Duplicate and redundant code got removed. Configuration now has more options and I got rid of most of the bugs. This version also supports reCaptcha V3 and now you have the option to use v2 or v3 according to your need. 
+
+**future:** There is a long way ahead. Keep posted for more updates and features. I think about version 5 all major updates will have huge breaking changes. I will continue supporting and updating this project until either I'm too old for it or an official solution is available for it. 
 
 ## Intallation
  
- ### Package Manager Console 
- ```Install-Package GoogleCaptchaComponent -Version 3.0.0```
+ #### Package Manager Console 
  
- ### Dotnet CLI
- ```dotnet add package GoogleCaptchaComponent --version 3.0.0```
+ ```
+ Install-Package GoogleCaptchaComponent -Version 3.0.0
+ ```
  
- ### Configuration
+ #### Dotnet CLI
  
- add the following code to ```Program.cs``` . You need to get a site Key from Google
+ ```
+ dotnet add package GoogleCaptchaComponent --version 3.0.0
+ ```
+ 
+ 
+ ## Configuration
+ 
+ Add the following code to `Program.cs` . You need to get a site Key from Google
  
  ```csharp
  builder.Services.AddGoogleCaptcha(configuration =>
         {
-            configuration.ServerSideValidationRequired = true; //If you don't need server side validation with secret key, set it to false
+            configuration.ServerSideValidationRequired = true; 
             configuration.SiteKey = config;
             configuration.CaptchaVersion = CaptchaConfiguration.Version.V2; // V3 is also the option now
         });
  ```
+ If you don't need server side validation with secret key or have another way of captcha var set `ServerSideValidationRequired` to `false`
+
+ Keep in mind that by setting `CaptchaVersion` to `CaptchaConfiguration.Version.V3` server side validation will be required and has to be implemented or it will throw `CallBackDelegateException`
  
- Keep in mind that by setting ```CaptchaVersion``` to ```CaptchaConfiguration.Version.V3``` server side validation will be required and has to be implemented
- 
- add the following code to ```_Imports.razor``` file
+ Add the following code to `_Imports.razor` file
  
  ```razor
- @using GoogleCaptchaComponent.Components
+@using GoogleCaptchaComponent.Components
 @using GoogleCaptchaComponent.Events
-@using GoogleCaptchaComponent.Services
  ```
- then add the following code to ```index.html``` file at the end of the ```body``` tag
+ 
+ Add the following code to `index.html` file at the end of the `body` tag
  
  ```html
 <script src="_content/GoogleCaptchaComponent/Scripts/ScriptLoader.js"></script>
 ```
  
  ## Usage
+ 
  first of all add the Captcha Component in the place that you need like this:
  
  ```razor
@@ -59,23 +76,21 @@
     ServerValidationErrorCallBack="ServerSideValidationError" 
     ServerSideValidationHandler="ServerSideValidationHandler" >
 </GoogleRecaptcha>
-
  ```
- ```SuccessCallBack``` event is fired when user has successfully validated captcha. If captcha version is ```V3``` or ```ServerSideValidationRequired``` is set to ```true``` than this event will be fired after successful validation of ```ServerSideValidationHandler```.After successful validation, response token of reCaptcha is available via ```CaptchaResponse``` propery of ```CaptchaSuccessEventArgs```. Code of this handler's event can be something like this:
+ 
+ `SuccessCallBack` event is fired when user has successfully validated captcha. If captcha version is `V3` or `ServerSideValidationRequired` is set to `true` than this event will be fired after successful validation of `ServerSideValidationHandler` .After successful validation, response token of reCaptcha is available via `CaptchaResponse` propery of `CaptchaSuccessEventArgs` class. Code of this handler can be something like this:
 
  
  ```Csharp
  void SuccessCallBack(CaptchaSuccessEventArgs e)
     {
-        Disabled = false; //Disable attribute of button becomes false
-
-         captchaResponse = e.CaptchaResponse;
-
+        Disabled = false; //Disable attribute of button becomes false for example
+        captchaResponse = e.CaptchaResponse; //result recieved from reCaptcha
         base.StateHasChanged();
     }
  ```
  
- ```TimeOutCallBack``` is called when the validation time of reCaptcha response has expired. its handler code can be something like this
+ `TimeOutCallBack` is called when the validation time of reCaptcha response has expired. Code of this handler can be something like this:
  
   ```Csharp
   void TimeOutCallBack(CaptchaTimeOutEventArgs e)
@@ -86,55 +101,33 @@
     }
  ```
  
- there are two events named ```SuccessCallBack``` and ```TimeOutCallBack```
- the ```SuccessCallBack``` you the eventArg class is ```CaptchaSuccessEventArgs``` which gives you the captcha response provided by google captcha API. And the ```CaptchaTimeOutEventArgs``` is simply a marker that shows the time of captcha validation is passed.
+ `ServerValidationErrorCallBack` is triggered when the validation of captcha response with secret key (that an internal API that holds that secret key had done it) was not successful. Keep in mind that this validation result value is determined by `ServerSideValidationHandler` result. Code of this handler can be something like this:
  
- Imagine this simple scenario. I want to enable the count button after the captcha is validated. I can do the following after injecting ```ICaptchaCallBackService```:
- 
- ```razor
-
-    protected override void OnAfterRender(bool firstRender)
+ ```Csharp
+  private void ServerSideValidationError(CaptchaServerSideValidationErrorEventArgs e)
     {
-        callBackService.SuccessCallBack += SuccessCallBack;
-        callBackService.TimeOutCallBack+=TimeOutCallBack;
-
-        base.OnAfterRender(firstRender);
+        errorMessage = $"Captcha server side validation error: {e.ErrorMessage}";
     }
-
-    private void TimeOutCallBack(object sender, CaptchaTimeOutEventArgs e)
-    {
-        Console.WriteLine("Captcha Time Out");
-    }
-
-    private void SuccessCallBack(object sender, CaptchaSuccessEventArgs e)
-    {
-        Disabled = false;
-
-         base.StateHasChanged();
-    }
-
-    private int currentCount = 0;
-
-    private bool Disabled = true;
-
-    private void IncrementCount()
-    {
-
-        currentCount++;
-    }
-}
-
  ```
+ 
+ `ServerSideValidationHandler` is where you can chack the captcha's validity by secret key.
+ 
+ ***Important*** : Never put secret in client code. Secret key must be stored in a safe place so that only your Internal trusted API can have access to it.
+ ***Remember*** : This event must have a related handler if `ServerSideValidationRequired` property is set to `true` or `CaptchaVersion` is set to 
+ `CaptchaConfiguration.Version.V3`. without handler it will throw `CallBackDelegateException`
+ 
+ The return of this event (or better called funtion) is `Task<ServerSideCaptchaValidationResultModel>` . The Model `ServerSideCaptchaValidationResultModel` has two properties: 
+ **`IsSuccess`** : Whether the result of server side validation was successful or not. if `true` the `SuccessCallBack` will be triggered. Otherwise `ServerValidationErrorCallBack` is triggered.
+ 
+ **`ValidationMessage`** : Message related to the server side validation result. 
+ 
 
-first I override the ```OnAfterRender``` method and register event handlers for ```SuccessCallBack``` and ```TimeOutCallBack```. After successful captcha validation ```SuccessCallBack``` gets invoked and I can do things I need inside it.
-Note that you don't necessarily need  to wirte an eventHandler for ```TimeOutCallBack```
-the google captcha automatically renews the captcha for you. But if you need to do extra things you can use this event.
+## Demo
 
-### Demo
 ![](https://i.ibb.co/nr08cyG/chrome-capture.gif)
 
 
-### Give it a chance!
-If you like this project give it a star. If you find any issues feel free to create issue. Your help is greatly appreciated so feel free to give me PRs
+## Give it a chance!
+If you like this project give it a star. If you find any issues feel free to create them. Your help is greatly appreciated so feel free to give me PRs and your prefered scenarios.
 
 
