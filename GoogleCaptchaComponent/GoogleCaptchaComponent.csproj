@@ -4,7 +4,7 @@
     <TargetFramework>net7.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>Babak Taremi</Authors>
-    <Version>3.0.2</Version>
+    <Version>3.0.3</Version>
     <Description>Simple Package for using google reCaptcha in blazor web assembly</Description>
     <PackageProjectUrl>https://github.com/babaktaremi/GoogleCaptchaComponent</PackageProjectUrl>
 	  <PackageIcon>icon.png</PackageIcon>
@@ -27,6 +27,13 @@ Also support for reCaptcha v3 has been added</PackageReleaseNotes>
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components" Version="7.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.2" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <Content Update="nuget.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 
