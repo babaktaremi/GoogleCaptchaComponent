@@ -54,21 +54,33 @@ public partial class GoogleRecaptcha
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (CaptchaConfiguration.Value.CaptchaVersion == Configuration.CaptchaConfiguration.Version.V3)
-            await Js.InvokeVoidAsync("loadScript", $"https://www.google.com/recaptcha/api.js?render={CaptchaConfiguration.Value.SiteKey}");
-        else
-            await Js.InvokeVoidAsync("loadScript", "https://www.google.com/recaptcha/api.js");
 
-        await Js.InvokeVoidAsync("loadScript", "_content/GoogleCaptchaComponent/Scripts/JsOfReCAPTCHA.js");
 
         if (firstRender)
         {
+            try
+            {
+                if (CaptchaConfiguration.Value.CaptchaVersion == Configuration.CaptchaConfiguration.Version.V3)
+                    await Js.InvokeVoidAsync("loadScript", $"https://www.google.com/recaptcha/api.js?render={CaptchaConfiguration.Value.SiteKey}");
+                else
+                    await Js.InvokeVoidAsync("loadScript", "https://www.google.com/recaptcha/api.js");
 
-            if (CaptchaConfiguration.Value.CaptchaVersion == Configuration.CaptchaConfiguration.Version.V2)
-                await Js.InvokeVoidAsync("render_recaptcha_v2", DotNetObjectReference.Create(this), "recaptcha_container", CaptchaConfiguration.Value.SiteKey);
-            else
-                await Js.InvokeVoidAsync("render_recaptcha_v3", DotNetObjectReference.Create(this), CaptchaConfiguration.Value.SiteKey);
+                await Js.InvokeVoidAsync("loadScript", "_content/GoogleCaptchaComponent/Scripts/JsOfReCAPTCHA.js");
+
+                if (CaptchaConfiguration.Value.CaptchaVersion == Configuration.CaptchaConfiguration.Version.V2)
+                    await Js.InvokeVoidAsync("render_recaptcha_v2", DotNetObjectReference.Create(this), "recaptcha_container", CaptchaConfiguration.Value.SiteKey);
+                else
+                    await Js.InvokeVoidAsync("render_recaptcha_v3", DotNetObjectReference.Create(this), CaptchaConfiguration.Value.SiteKey);
+            }
+            catch (Exception e)
+            {
+                throw new CaptchaLoadScriptException(
+                    "Invalid site key or wrong reCaptcha version. Make sure your site key is valid and is for proper version",
+                    e);
+            }
         }
+
+       
 
         await base.OnAfterRenderAsync(firstRender);
     }
@@ -79,19 +91,37 @@ public partial class GoogleRecaptcha
         if (CaptchaConfiguration.Value.ServerSideValidationRequired)
         {
             if (ServerSideValidationHandler == null)
-                throw new CallBackDelegateException(
-                    $"Server side validation is set to true but there is no handler found for {nameof(ServerSideValidationHandler)}");
-
-            var serverSideValidationResult = await ServerSideValidationHandler(new ServerSideCaptchaValidationRequestModel(response));
-
-            if (!serverSideValidationResult.IsSuccess)
             {
-                if (!ServerValidationErrorCallBack.HasDelegate)
+                if(CaptchaConfiguration.Value.CaptchaVersion==Configuration.CaptchaConfiguration.Version.V3)
                     throw new CallBackDelegateException(
-                        $"Server side reCaptcha validation is failed but no handler found for {nameof(ServerValidationErrorCallBack)}");
+                        $"Server side validation is required for reCaptcha-V3 but there is no handler found for {nameof(ServerSideValidationHandler)}");
 
-                await ServerValidationErrorCallBack.InvokeAsync(
-                    new CaptchaServerSideValidationErrorEventArgs(serverSideValidationResult.ValidationMessage));
+                else
+                    throw new CallBackDelegateException(
+                        $"Server side validation is set to true but there is no handler found for {nameof(ServerSideValidationHandler)}");
+            }
+               
+
+            try
+            {
+                var serverSideValidationResult = await ServerSideValidationHandler(new ServerSideCaptchaValidationRequestModel(response));
+
+
+                if (!serverSideValidationResult.IsSuccess)
+                {
+                    if (!ServerValidationErrorCallBack.HasDelegate)
+                        throw new CallBackDelegateException(
+                            $"Server side reCaptcha validation is failed but no handler found for {nameof(ServerValidationErrorCallBack)}");
+
+                    await ServerValidationErrorCallBack.InvokeAsync(
+                        new CaptchaServerSideValidationErrorEventArgs(serverSideValidationResult.ValidationMessage));
+                }
+
+            }
+
+            catch (Exception e)
+            {
+                throw new CallBackDelegateException("Error invoking related server validation callback", e);
             }
         }
 
