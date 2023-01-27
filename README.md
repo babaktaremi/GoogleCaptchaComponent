@@ -1,3 +1,6 @@
+[![NuGet Badge](https://buildstats.info/nuget/googlecaptchacomponent)](https://www.nuget.org/packages/googlecaptchacomponent)
+[![License: MIT](https://img.shields.io/badge/License-MIT-brightgreen.svg)](https://opensource.org/licenses/MIT)
+
 ## Features
 
 ![](https://i.ibb.co/1zskmPX/Relazor-180x180.png)
