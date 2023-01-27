@@ -29,13 +29,13 @@
  #### Package Manager Console 
  
  ```
- Install-Package GoogleCaptchaComponent -Version 3.0.0
+ Install-Package GoogleCaptchaComponent -Version 3.0.3
  ```
  
  #### Dotnet CLI
  
  ```
- dotnet add package GoogleCaptchaComponent --version 3.0.0
+ dotnet add package GoogleCaptchaComponent --version 3.0.3
  ```
  
  ## Configuration
@@ -46,7 +46,7 @@
  builder.Services.AddGoogleCaptcha(configuration =>
         {
             configuration.ServerSideValidationRequired = true; 
-            configuration.SiteKey = config;
+            configuration.SiteKey = "Your Site Key"; // Site key can be received from reCaptcha admin console
             configuration.CaptchaVersion = CaptchaConfiguration.Version.V2; // V3 is also the option now
         });
  ```
