@@ -1,5 +1,6 @@
 [![NuGet Badge](https://buildstats.info/nuget/googlecaptchacomponent)](https://www.nuget.org/packages/googlecaptchacomponent)
 [![License: MIT](https://img.shields.io/badge/License-MIT-brightgreen.svg)](https://opensource.org/licenses/MIT)
+![Twitter Follow](https://img.shields.io/twitter/url?label=Follow&style=social&url=https%3A%2F%2Ftwitter.com%2FBabakTaremi)
 
 ## Features
 
