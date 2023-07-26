@@ -2,7 +2,7 @@
 window.loadScript = function (scriptPath) {
     // check list - if already loaded we can ignore
     if (loaded[scriptPath]) {
-        console.log(scriptPath + " already loaded");
+        //console.log(scriptPath + " already loaded");
         // return 'empty' promise
         return new this.Promise(function (resolve, reject) {
             resolve();
@@ -25,20 +25,20 @@ window.loadScript = function (scriptPath) {
         script.src = scriptPath;
         script.type = "text/javascript";
 
-        console.log(scriptPath + " created");
+       // console.log(scriptPath + " created");
 
         // flag as loading/loaded
         loaded[scriptPath] = true;
 
         // if the script returns okay, return resolve
         script.onload = function () {
-            console.log(scriptPath + " loaded ok");
+           // console.log(scriptPath + " loaded ok");
             resolve(scriptPath);
         };
 
         // if it fails, return reject
         script.onerror = function () {
-            console.log(scriptPath + " load failed");
+          //  console.log(scriptPath + " load failed");
             reject(scriptPath);
         }
 
