@@ -19,8 +19,8 @@ public class Program
 
         var tokenData = new Dictionary<string, string>()
         {
-            {"CaptchaSiteToken", "Your Site Key"},
-            {"CaptchaSecretToken", "Your Secret Key"}
+            {"CaptchaSiteToken", "6LfNnLQaAAAAACi2s1B6DNam6Ls855PgjqjgkQ4j"},
+           // {"CaptchaSecretToken", "Your Secret Key"}
         };
 
         var memoryConfig = new MemoryConfigurationSource { InitialData = tokenData };
