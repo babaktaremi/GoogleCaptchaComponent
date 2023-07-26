@@ -14,7 +14,7 @@
     <Product>$(AssemblyName)-Blazor</Product>
 	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
 	  <PackageReleaseNotes>This Release has a lot of breaking changes compared to previous version.
-Also support for reCaptcha v3 has been added</PackageReleaseNotes>
+Also support for reCaptcha v3 has been added. Version 3.1.0 has some minor bug fixes and redundant loggings removed</PackageReleaseNotes>
 	  <Copyright>Babak Taremi</Copyright>
   </PropertyGroup>
 
