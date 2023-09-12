@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading.Tasks;
 using GoogleCaptchaComponent.Configuration;
@@ -21,6 +22,7 @@ public partial class GoogleRecaptcha
 
     [Inject] public IJSRuntime Js { get; set; }
     [Inject] internal IOptions<CaptchaConfiguration> CaptchaConfiguration { get; set; }
+    [Inject] internal CacheContainer CacheContainer { get; set; }
 
     /// <summary>
     /// Success captcha validation event
@@ -58,31 +60,54 @@ public partial class GoogleRecaptcha
 
         if (firstRender)
         {
-            try
-            {
-                if (CaptchaConfiguration.Value.CaptchaVersion == Configuration.CaptchaConfiguration.Version.V3)
-                    await Js.InvokeVoidAsync("loadScript", $"https://www.google.com/recaptcha/api.js?render={CaptchaConfiguration.Value.SiteKey}");
-                else
-                    await Js.InvokeVoidAsync("loadScript", "https://www.google.com/recaptcha/api.js");
-
-                await Js.InvokeVoidAsync("loadScript", "_content/GoogleCaptchaComponent/Scripts/JsOfReCAPTCHA.js");
-
-                if (CaptchaConfiguration.Value.CaptchaVersion == Configuration.CaptchaConfiguration.Version.V2)
-                    await Js.InvokeVoidAsync("render_recaptcha_v2", DotNetObjectReference.Create(this), "recaptcha_container", CaptchaConfiguration.Value.SiteKey);
-                else
-                    await Js.InvokeVoidAsync("render_recaptcha_v3", DotNetObjectReference.Create(this), CaptchaConfiguration.Value.SiteKey);
-            }
-            catch (Exception e)
-            {
-                throw new CaptchaLoadScriptException(
-                    "Invalid site key or wrong reCaptcha version. Make sure your site key is valid and is for proper version",
-                    e);
-            }
+            await InitializeScripts();
+            await HandleRecaptchaCallBackFunctions();
         }
 
-       
 
-        await base.OnAfterRenderAsync(firstRender);
+
+        //await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private async Task HandleRecaptchaCallBackFunctions()
+    {
+        try
+        {
+
+            if (CaptchaConfiguration.Value.CaptchaVersion == Configuration.CaptchaConfiguration.Version.V2)
+                await Js.InvokeVoidAsync("render_recaptcha_v2", DotNetObjectReference.Create(this), "recaptcha_container",
+                    CaptchaConfiguration.Value.SiteKey);
+            else
+                await Js.InvokeVoidAsync("render_recaptcha_v3", DotNetObjectReference.Create(this),
+                    CaptchaConfiguration.Value.SiteKey);
+        }
+        catch (Exception e)
+        {
+            throw new CaptchaLoadScriptException(
+                "Invalid site key or wrong reCaptcha version. Make sure your site key is valid and is for proper version",
+                e);
+        }
+    }
+
+    private async Task InitializeScripts()
+    {
+        await LoadScript("_content/GoogleCaptchaComponent/Scripts/JsOfReCAPTCHA.js");
+
+
+        if (CaptchaConfiguration.Value.CaptchaVersion == Configuration.CaptchaConfiguration.Version.V3)
+            await LoadScript($"https://www.google.com/recaptcha/api.js?render={CaptchaConfiguration.Value.SiteKey}");
+
+        else
+            await LoadScript("https://www.google.com/recaptcha/api.js");
+    }
+
+    private async Task LoadScript(string scriptPath)
+    {
+        if (CacheContainer.LoadedScripts.Contains(scriptPath))
+            return;
+
+        await Js.InvokeVoidAsync("loadScript", scriptPath);
+        CacheContainer.LoadedScripts.Add(scriptPath);
     }
 
     [JSInvokable, EditorBrowsable(EditorBrowsableState.Never)]
@@ -92,7 +117,7 @@ public partial class GoogleRecaptcha
         {
             if (ServerSideValidationHandler == null)
             {
-                if(CaptchaConfiguration.Value.CaptchaVersion==Configuration.CaptchaConfiguration.Version.V3)
+                if (CaptchaConfiguration.Value.CaptchaVersion == Configuration.CaptchaConfiguration.Version.V3)
                     throw new CallBackDelegateException(
                         $"Server side validation is required for reCaptcha-V3 but there is no handler found for {nameof(ServerSideValidationHandler)}");
 
@@ -100,7 +125,7 @@ public partial class GoogleRecaptcha
                     throw new CallBackDelegateException(
                         $"Server side validation is set to true but there is no handler found for {nameof(ServerSideValidationHandler)}");
             }
-               
+
 
             try
             {
@@ -156,5 +181,7 @@ public partial class GoogleRecaptcha
 
         await ServerValidationErrorCallBack.InvokeAsync(new CaptchaServerSideValidationErrorEventArgs(message));
     }
+
+
 
 }

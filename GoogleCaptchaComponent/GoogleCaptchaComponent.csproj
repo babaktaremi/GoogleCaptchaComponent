@@ -13,8 +13,7 @@
     <Title>Blazor Google Captcha Component</Title>
     <Product>$(AssemblyName)-Blazor</Product>
 	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
-	  <PackageReleaseNotes>This Release has a lot of breaking changes compared to previous version.
-Also support for reCaptcha v3 has been added. Version 3.1.0 has some minor bug fixes and redundant loggings removed</PackageReleaseNotes>
+	  <PackageReleaseNotes>Added Cache Container in order to prevent duplicate script loading</PackageReleaseNotes>
 	  <Copyright>Babak Taremi</Copyright>
   </PropertyGroup>
 

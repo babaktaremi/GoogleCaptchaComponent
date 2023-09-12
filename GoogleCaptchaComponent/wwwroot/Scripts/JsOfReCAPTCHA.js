@@ -7,7 +7,7 @@
                 'expired-callback': () => { dotNetObj.invokeMethodAsync('CallbackOnExpired'); }
             });
         });
-    }.bind(this), 100);
+    }.bind(this), 1000);
 };
 
 function render_recaptcha_v3(dotNetObj, sitekey) {
