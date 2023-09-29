@@ -12,14 +12,19 @@
 
 function render_recaptcha_v3(dotNetObj, sitekey) {
     setTimeout(function () {
-            grecaptcha.ready(function () {
-                grecaptcha.execute(sitekey).then(function (token) {
-                      dotNetObj.invokeMethodAsync('CallbackOnSuccess', token); 
-                });
+        grecaptcha.ready(function () {
+            grecaptcha.execute(sitekey).then(function (token) {
+                dotNetObj.invokeMethodAsync('CallbackOnSuccess', token);
             });
+        });
     }.bind(this), 1000);
 };
 
+
+function reloadCaptcha() {
+
+    grecaptcha.reset();
+}
 
 function getResponse(widgetId) {
     return grecaptcha.getResponse(widgetId);

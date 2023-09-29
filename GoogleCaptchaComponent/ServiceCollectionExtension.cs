@@ -1,6 +1,8 @@
 ﻿using System;
 using GoogleCaptchaComponent.Configuration;
 using GoogleCaptchaComponent.Models;
+using GoogleCaptchaComponent.Services;
+using GoogleCaptchaComponent.Services.Implementation;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace GoogleCaptchaComponent;
@@ -18,6 +20,8 @@ public static class ServiceCollectionExtension
         services.Configure<CaptchaConfiguration>(configuration);
 
         services.AddSingleton<CacheContainer>();
+
+        services.AddScoped<IRecaptchaService, RecaptchaService>();
 
         return services;
     }

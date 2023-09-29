@@ -1,7 +1,9 @@
 ﻿@page "/counter"
 @using GoogleCaptchaComponent.Models
+@using GoogleCaptchaComponent.Services
 @using Microsoft.Extensions.Configuration
 @inject IConfiguration Configuration
+@inject IRecaptchaService RecaptchaService
 <h1>Counter</h1>
 <h3 class="text-danger">@errorMessage</h3>
 <h5 class="text-success">@captchaResponse</h5>
@@ -17,6 +19,7 @@
 
 
 <button class="btn btn-primary" @onclick="IncrementCount" disabled="@Disabled">Click me</button>
+<button class="btn btn-primary" @onclick="ReloadRecapatcha" disabled="@Disabled">reload</button>
 
 @code {
     
@@ -68,6 +71,11 @@
         return new ServerSideCaptchaValidationResultModel(true, "Success");
 
     // return new ServerSideCaptchaValidationResultModel(apiResult.Success, string.Join("\n",apiResult.ErrorCodes ?? new List<string>(){"No Error"}));
+    }
+
+    private async Task ReloadRecapatcha()
+    {
+        await RecaptchaService.ReloadAsync();
     }
 
 }

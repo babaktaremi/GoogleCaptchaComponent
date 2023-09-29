@@ -4,7 +4,7 @@
     <TargetFramework>net7.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>Babak Taremi</Authors>
-    <Version>3.2.0</Version>
+    <Version>3.5.0</Version>
     <Description>Simple Package for using google reCaptcha in blazor web assembly</Description>
     <PackageProjectUrl>https://github.com/babaktaremi/GoogleCaptchaComponent</PackageProjectUrl>
 	  <PackageIcon>icon.png</PackageIcon>
@@ -13,7 +13,7 @@
     <Title>Blazor Google Captcha Component</Title>
     <Product>$(AssemblyName)-Blazor</Product>
 	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
-	  <PackageReleaseNotes>Added Cache Container in order to prevent duplicate script loading</PackageReleaseNotes>
+	  <PackageReleaseNotes>Added reload method to call when you want to reload your recaptcha component</PackageReleaseNotes>
 	  <Copyright>Babak Taremi</Copyright>
   </PropertyGroup>
 
