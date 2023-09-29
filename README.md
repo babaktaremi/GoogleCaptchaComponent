@@ -147,6 +147,26 @@
     }
 ```
 
+## Refreshing The Captcha Manually
+
+Inject the ```IRecaptchaService``` and call the ```ReloadAsync``` method. If there is a recaptcha component on page , it will reload the component.
+
+```razor
+@inject IRecaptchaService RecaptchaService
+
+<button class="btn btn-primary" @onclick="ReloadRecapatcha">reload</button>
+```
+
+```csharp
+   private async Task ReloadRecapatcha()
+   {
+       await RecaptchaService.ReloadAsync();
+   }
+```
+
+
+
+
 ## Demo
 
 ![](https://i.ibb.co/nr08cyG/chrome-capture.gif)
