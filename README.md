@@ -64,6 +64,8 @@
  ```razor
 @using GoogleCaptchaComponent.Components
 @using GoogleCaptchaComponent.Events
+@using GoogleCaptchaComponent.Models
+@using GoogleCaptchaComponent.Services
  ```
  
  Add the following code to `index.html` file at the end of the `body` tag
