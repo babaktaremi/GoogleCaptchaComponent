@@ -19,7 +19,7 @@ public static class ServiceCollectionExtension
     {
         services.Configure<CaptchaConfiguration>(configuration);
 
-        services.AddSingleton<CacheContainer>();
+        services.AddScoped<CacheContainer>();
 
         services.AddScoped<IRecaptchaService, RecaptchaService>();
 

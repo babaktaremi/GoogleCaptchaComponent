@@ -1,0 +1,69 @@
+﻿@page "/counter"
+<h1>Counter</h1>
+<h3 class="text-danger">@errorMessage</h3>
+<h5 class="text-success">@captchaResponse</h5>
+
+<p>Current count: @currentCount</p>
+
+<GoogleRecaptcha SuccessCallBack="SuccessCallBack"
+                 TimeOutCallBack="TimeOutCallBack"
+                 ServerValidationErrorCallBack="ServerSideValidationError"
+                 ServerSideValidationHandler="ServerSideValidationHandler">
+</GoogleRecaptcha>
+
+
+<button class="btn btn-primary" @onclick="IncrementCount" disabled="@Disabled">Click me</button>
+
+@code {
+
+    void TimeOutCallBack(CaptchaTimeOutEventArgs e)
+    {
+        Disabled = true;
+        Console.WriteLine($"Captcha Time Out with message {e.ErrorMessage}");
+        errorMessage = $"Captcha Timeout: {e.ErrorMessage}";
+    }
+
+
+    void SuccessCallBack(CaptchaSuccessEventArgs e)
+    {
+        Disabled = false;
+
+        captchaResponse = e.CaptchaResponse;
+
+        base.StateHasChanged();
+    }
+
+    private string errorMessage;
+    private string captchaResponse;
+
+    private int currentCount = 0;
+
+    private bool Disabled = true;
+
+    private void IncrementCount()
+    {
+
+        currentCount++;
+    }
+
+    private void ServerSideValidationError(CaptchaServerSideValidationErrorEventArgs e)
+    {
+        errorMessage = $"Captcha server side validation error: {e.ErrorMessage}";
+    }
+
+    /// <summary>
+    /// Captcha Verification Should be done by an internal api which holds the secret key
+    /// </summary>
+    /// <returns></returns>
+    private async Task<ServerSideCaptchaValidationResultModel> ServerSideValidationHandler(ServerSideCaptchaValidationRequestModel requestModel)
+    {
+        using var httpClient = new HttpClient();
+
+        //var apiResult = await httpClient.GetFromJsonAsync<GoogleCaptchaCheckResponseResult>($"https://localhost:7113/VerifyCaptcha?token={requestModel.CaptchaResponse}");
+
+        return new ServerSideCaptchaValidationResultModel(true, "Success");
+
+        // return new ServerSideCaptchaValidationResultModel(apiResult.Success, string.Join("\n",apiResult.ErrorCodes ?? new List<string>(){"No Error"}));
+    }
+
+}

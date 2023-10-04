@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GoogleCaptchaComponent", "G
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GoogleCaptcha.Exmaple", "GoogleCaptcha.Exmaple\GoogleCaptcha.Exmaple.csproj", "{9492FD66-E3C6-4708-9900-0C73C3C2EFC7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoogleCaptcha.Example.Server", "GoogleCaptcha.Example.Server\GoogleCaptcha.Example.Server.csproj", "{1C68B1ED-578E-4FEB-9605-3A160BF7DF92}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,6 +25,10 @@ Global
 		{9492FD66-E3C6-4708-9900-0C73C3C2EFC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9492FD66-E3C6-4708-9900-0C73C3C2EFC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9492FD66-E3C6-4708-9900-0C73C3C2EFC7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1C68B1ED-578E-4FEB-9605-3A160BF7DF92}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1C68B1ED-578E-4FEB-9605-3A160BF7DF92}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1C68B1ED-578E-4FEB-9605-3A160BF7DF92}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1C68B1ED-578E-4FEB-9605-3A160BF7DF92}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -30,6 +36,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{ABFBF769-F6D8-4B70-8D22-192F154CF17F} = {8729638E-38D1-4567-860E-415C62575A05}
 		{9492FD66-E3C6-4708-9900-0C73C3C2EFC7} = {8729638E-38D1-4567-860E-415C62575A05}
+		{1C68B1ED-578E-4FEB-9605-3A160BF7DF92} = {8729638E-38D1-4567-860E-415C62575A05}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2FB783BA-5AA3-4768-BBAD-6B815C4F9CB3}
