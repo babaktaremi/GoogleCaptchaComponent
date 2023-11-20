@@ -24,7 +24,9 @@
 
 **-V2:** : Major Bug Fixes. Interface clean up and added support for events in order to be more flexible and other devs can handle more customized scenarios. But this version also included some major bugs and the method provided for captcha validation wasn't so straight forward. Also the Server side validation flow using secret key was not present and users had to implement most of this feature themselves. **Depricated and no longer supported**
 
-**-V3 (Current):** : By far the best release. I finally found the time and energy to write in the way I want. API got a lot cleaner. Duplicate and redundant code got removed. Configuration now has more options and I got rid of most of the bugs. This version also supports reCaptcha V3 and now you have the option to use v2 or v3 according to your need. 
+**-V3 :** :  Duplicate and redundant code got removed. Configuration now has more options and I got rid of most of the bugs. This version also supports reCaptcha V3 and now you have the option to use v2 or v3 according to your need. This version is useful for projects that have been developed using NET 7 and above
+
+**-V4 :** Update project to NET 8 . Theme configuration added and now both V2 and V3 can be used in the same project and different pages (based on your needs you can use V2 in one page and V3 in another page). Also server side validation is required for both V2 and V3 in this version . This version also have some minor breaking changes. So keep that in mind when updating.
 
 **future:** There is a long way ahead. Keep posted for more updates and features. I think about version 5 all major updates will have huge breaking changes. I will continue supporting and updating this project until either I'm too old for it or an official solution is available for it. 
 
@@ -33,13 +35,13 @@
  #### Package Manager Console 
  
  ```
- Install-Package GoogleCaptchaComponent -Version 3.0.3
+ Install-Package GoogleCaptchaComponent 
  ```
  
  #### Dotnet CLI
  
  ```
- dotnet add package GoogleCaptchaComponent --version 3.0.3
+ dotnet add package GoogleCaptchaComponent 
  ```
  
  ## Configuration
@@ -47,17 +49,16 @@
  Add the following code to `Program.cs` . You need to get a site Key from Google
  
  ```csharp
- builder.Services.AddGoogleCaptcha(configuration =>
+        builder.Services.AddGoogleCaptcha(configuration =>
         {
-            configuration.ServerSideValidationRequired = true; 
-            configuration.SiteKey = "Your Site Key"; // Site key can be received from reCaptcha admin console
-            configuration.CaptchaVersion = CaptchaConfiguration.Version.V2; // V3 is also the option now
+            configuration.V2SiteKey = "Your V2 site key from Google developer console";
+            configuration.V3SiteKey = "Your V3 Site key from Google developer console";
+            configuration.DefaultVersion = CaptchaConfiguration.Version.V2;
+            configuration.DefaultTheme = CaptchaConfiguration.Theme.Light;
         });
  ```
- 
- If you don't need server side validation with secret key or have another way of captcha var set `ServerSideValidationRequired` to `false`
-
- Keep in mind that by setting `CaptchaVersion` to `CaptchaConfiguration.Version.V3` server side validation will be required and has to be implemented or it will throw `CallBackDelegateException`
+ `DefaultVersion` is the version that will be used if no other versions are specified in component parameters. 
+ `DefaultTheme`  is the theme that will be used if no other themes are specified in component parameters. Note that you can only apply version for Recaptcha V2 at the moment.
  
  Add the following code to `_Imports.razor` file
  
@@ -66,6 +67,7 @@
 @using GoogleCaptchaComponent.Events
 @using GoogleCaptchaComponent.Models
 @using GoogleCaptchaComponent.Services
+@using GoogleCaptchaComponent.Configuration
  ```
  
  Add the following code to `index.html` file at the end of the `body` tag
@@ -79,15 +81,16 @@
  first of all add the Captcha Component in the place that you need like this:
  
  ```razor
-<GoogleRecaptcha 
-    SuccessCallBack="SuccessCallBack" 
-    TimeOutCallBack="TimeOutCallBack" 
-    ServerValidationErrorCallBack="ServerSideValidationError" 
-    ServerSideValidationHandler="ServerSideValidationHandler" >
+<GoogleRecaptcha SuccessCallBack="SuccessCallBack"
+                 TimeOutCallBack="TimeOutCallBack"
+                 ServerValidationErrorCallBack="ServerSideValidationError"
+                 ServerSideValidationHandler="ServerSideValidationHandler"
+                 Version="CaptchaConfiguration.Version.V2"
+                 Theme="CaptchaConfiguration.Theme.Light">
 </GoogleRecaptcha>
  ```
  
- `SuccessCallBack` event is fired when user has successfully validated captcha. If captcha version is `V3` or `ServerSideValidationRequired` is set to `true` than this event will be fired after successful validation of `ServerSideValidationHandler` .After successful validation, response token of reCaptcha is available via `CaptchaResponse` propery of `CaptchaSuccessEventArgs` class. Code of this handler can be something like this:
+ `SuccessCallBack` event is fired when user has successfully validated captcha. This event will be fired after successful validation of `ServerSideValidationHandler` .After successful validation, response token of reCaptcha is available via `CaptchaResponse` property of `CaptchaSuccessEventArgs` class. Code of this handler can be something like this:
 
  
  ```Csharp
@@ -123,8 +126,7 @@
  
  ***Important*** : Never put secret in client code. Secret key must be stored in a safe place so that only your Internal trusted API can have access to it.
  
- ***Remember*** : This event must have a related handler if `ServerSideValidationRequired` property is set to `true` or `CaptchaVersion` is set to 
- `CaptchaConfiguration.Version.V3`. without handler it will throw `CallBackDelegateException`
+ ***Remember*** : This event must have a related handler. Without handler it will throw `CallBackDelegateException`
  
  The return of this event (or better called funtion) is `Task<ServerSideCaptchaValidationResultModel>` . The Model `ServerSideCaptchaValidationResultModel` has two properties: 
  
@@ -148,6 +150,10 @@
         return new ServerSideCaptchaValidationResultModel(apiResult.Success, string.Join("\n",apiResult.ErrorCodes ?? new List<string>(){"No Error"}));
     }
 ```
+
+**`Version`** : You can specify version explicitly via this parameter . If you don't specify version , the `DefaultVersion` will be used instead.
+
+**`Theme`** : You can specify theme via this parameter (Theme is only applied to V2). If you don't specify theme , the `DefaultTheme` will be used instead.
 
 ## Refreshing The Captcha Manually
 
