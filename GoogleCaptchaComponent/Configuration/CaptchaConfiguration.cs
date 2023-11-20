@@ -7,25 +7,32 @@ public class CaptchaConfiguration
 {
     private bool _serverValidationEnabled;
     /// <summary>
-    /// Specific site key received from google developer console
+    /// Site key that will be used for V2 Recaptcha. 
     /// </summary>
-    public string SiteKey { get; set; }
+    public string V2SiteKey { get; set; }
 
     /// <summary>
-    /// A flag which indicates that captcha response result needs server side validation with secret key
+    /// Site key that will be used for V3 Recaptcha
     /// </summary>
-    public bool ServerSideValidationRequired {
-        get => CaptchaVersion==Version.V3 || _serverValidationEnabled;
-        set => _serverValidationEnabled=value;
-    }
+    public string V3SiteKey { get; set; }
 
     /// <summary>
-    /// Indicating Captcha Version. Note That if V3 is selected Server side validation becomes required and mandatory
+    /// Indicating Default Captcha Version. This version is applied if there is no version explicitly declared on component
     /// </summary>
-    public Version CaptchaVersion { get; set; }
+    public Version DefaultVersion { get; set; }
+
+    /// <summary>
+    /// Setting default captcha theme. This theme will be used if there is no theme explicitly declared on component. Note that theme is only applied to V2
+    /// </summary>
+    public Theme DefaultTheme { get; set; }
 
     public enum Version
     {
         V2,V3
+    }
+
+    public enum Theme
+    {
+        Dark,Light
     }
 }

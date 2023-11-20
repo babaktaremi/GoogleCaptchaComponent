@@ -1,4 +1,5 @@
 ﻿@page "/fetchdata"
+
 @inject HttpClient Http
 
 <h1>Weather forecast</h1>
@@ -13,33 +14,48 @@ else
 {
     <table class="table">
         <thead>
-            <tr>
-                <th>Date</th>
-                <th>Temp. (C)</th>
-                <th>Temp. (F)</th>
-                <th>Summary</th>
-            </tr>
+        <tr>
+            <th>Date</th>
+            <th>Temp. (C)</th>
+            <th>Temp. (F)</th>
+            <th>Summary</th>
+        </tr>
         </thead>
         <tbody>
-            @foreach (var forecast in forecasts)
-            {
-                <tr>
-                    <td>@forecast.Date.ToShortDateString()</td>
-                    <td>@forecast.TemperatureC</td>
-                    <td>@forecast.TemperatureF</td>
-                    <td>@forecast.Summary</td>
-                </tr>
-            }
+        @foreach (var forecast in forecasts)
+        {
+            <tr>
+                <td>@forecast.Date.ToShortDateString()</td>
+                <td>@forecast.TemperatureC</td>
+                <td>@forecast.TemperatureF</td>
+                <td>@forecast.Summary</td>
+            </tr>
+        }
         </tbody>
     </table>
 }
 
+@if (!string.IsNullOrEmpty(_captchaResponse))
+{
+    <p class="text-success">@_captchaResponse</p>
+}
+
+<GoogleRecaptcha SuccessCallBack="SuccessCallBack"
+                 TimeOutCallBack="TimeOutCallBack"
+                 ServerValidationErrorCallBack="ServerSideValidationError"
+                 ServerSideValidationHandler="ServerSideValidationHandler"
+                 Version="CaptchaConfiguration.Version.V3"
+                 Theme="CaptchaConfiguration.Theme.Dark">
+</GoogleRecaptcha>
+
+
 @code {
-    private WeatherForecast[] forecasts;
+    private List<WeatherForecast> forecasts=new ();
+    private string _captchaResponse = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
-        forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("sample-data/weather.json");
+
     }
 
     public class WeatherForecast
@@ -52,4 +68,27 @@ else
 
         public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
     }
+
+    private async Task SuccessCallBack(CaptchaSuccessEventArgs arg)
+    {
+        forecasts = await Http.GetFromJsonAsync<List<WeatherForecast>>("sample-data/weather.json");
+    }
+
+    private void TimeOutCallBack()
+    {
+        forecasts.Clear();
+    }
+
+    private Task<ServerSideCaptchaValidationResultModel> ServerSideValidationHandler(ServerSideCaptchaValidationRequestModel captchaValidationResult)
+    {
+        _captchaResponse = captchaValidationResult.CaptchaResponse;
+
+        return Task.FromResult(new ServerSideCaptchaValidationResultModel(true));
+    }
+
+    private void ServerSideValidationError()
+    {
+        Console.WriteLine("Validation Failed");
+    }
+
 }

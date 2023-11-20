@@ -1,10 +1,11 @@
-﻿function render_recaptcha_v2(dotNetObj, selector, sitekey) {
+﻿function render_recaptcha_v2(dotNetObj, selector, sitekey,theme) {
     setTimeout(function () {
         grecaptcha.ready(function () {
             grecaptcha.render(selector, {
                 'sitekey': sitekey,
                 'callback': (response) => { dotNetObj.invokeMethodAsync('CallbackOnSuccess', response); },
-                'expired-callback': () => { dotNetObj.invokeMethodAsync('CallbackOnExpired'); }
+                'expired-callback': () => { dotNetObj.invokeMethodAsync('CallbackOnExpired'); },
+                'theme': theme.replace(/"/g, "'")
             });
         });
     }.bind(this), 1000);

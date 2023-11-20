@@ -13,8 +13,10 @@ builder.Services.AddSingleton<WeatherForecastService>();
 
 builder.Services.AddGoogleCaptcha(options =>
 {
-    options.CaptchaVersion = CaptchaConfiguration.Version.V3;
-    options.SiteKey = "Your Site Key";
+    options.DefaultVersion = CaptchaConfiguration.Version.V3;
+    options.V3SiteKey = "Your V3 Site key from Google developer Console";
+    options.V2SiteKey = "Your V2 site key from Google developer Console";
+    options.DefaultTheme = CaptchaConfiguration.Theme.Dark;
 });
 
 var app = builder.Build();

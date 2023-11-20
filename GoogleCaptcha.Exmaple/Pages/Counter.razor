@@ -1,5 +1,4 @@
 ﻿@page "/counter"
-@using GoogleCaptchaComponent.Models
 @using GoogleCaptchaComponent.Services
 @using Microsoft.Extensions.Configuration
 @inject IConfiguration Configuration
@@ -14,7 +13,9 @@
     SuccessCallBack="SuccessCallBack" 
     TimeOutCallBack="TimeOutCallBack" 
     ServerValidationErrorCallBack="ServerSideValidationError" 
-    ServerSideValidationHandler="ServerSideValidationHandler" >
+    ServerSideValidationHandler="ServerSideValidationHandler"
+    Version="CaptchaConfiguration.Version.V2"
+    Theme="CaptchaConfiguration.Theme.Dark">
 </GoogleRecaptcha>
 
 

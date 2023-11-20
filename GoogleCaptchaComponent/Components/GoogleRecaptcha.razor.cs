@@ -9,6 +9,7 @@ using GoogleCaptchaComponent.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Options;
 using Microsoft.JSInterop;
+using static GoogleCaptchaComponent.Configuration.CaptchaConfiguration;
 
 namespace GoogleCaptchaComponent.Components;
 
@@ -29,6 +30,20 @@ public partial class GoogleRecaptcha
     /// </summary>
     [Parameter, EditorRequired]
     public EventCallback<CaptchaSuccessEventArgs> SuccessCallBack { get; set; }
+
+    /// <summary>
+    /// Specify the version to be used for this specific component.If null the default version will be used
+    /// </summary>
+    [Parameter] 
+    public CaptchaConfiguration.Version? Version { get; set; }
+
+
+    /// <summary>
+    /// Specify the theme to be used for this specific component. If null the default theme will be used
+    /// </summary>
+    [Parameter] 
+    public CaptchaConfiguration.Theme? Theme { get; set; }
+
 
     /// <summary>
     /// captcha validation Timeout event
@@ -73,13 +88,14 @@ public partial class GoogleRecaptcha
     {
         try
         {
+            
 
-            if (CaptchaConfiguration.Value.CaptchaVersion == Configuration.CaptchaConfiguration.Version.V2)
+            if (Version == Configuration.CaptchaConfiguration.Version.V2)
                 await Js.InvokeVoidAsync("render_recaptcha_v2", DotNetObjectReference.Create(this), "recaptcha_container",
-                    CaptchaConfiguration.Value.SiteKey);
+                    CurrentConfiguration.V2SiteKey, Theme.ToString()?.ToLower());
             else
                 await Js.InvokeVoidAsync("render_recaptcha_v3", DotNetObjectReference.Create(this),
-                    CaptchaConfiguration.Value.SiteKey);
+                    CurrentConfiguration.V3SiteKey, Theme.ToString()?.ToLower());
         }
         catch (Exception e)
         {
@@ -91,14 +107,26 @@ public partial class GoogleRecaptcha
 
     private async Task InitializeScripts()
     {
+        Version ??= CurrentConfiguration.DefaultVersion;
+        Theme ??= CurrentConfiguration.DefaultTheme;
+
+        if (Version.Value == Configuration.CaptchaConfiguration.Version.V2 &&
+            string.IsNullOrEmpty(CurrentConfiguration.V2SiteKey))
+            throw new CaptchaLoadScriptException("No site key is configured for V2");
+
+        if (Version.Value == Configuration.CaptchaConfiguration.Version.V3
+            && string.IsNullOrEmpty(CurrentConfiguration.V3SiteKey))
+            throw new CaptchaLoadScriptException("No site key is configured for V3");
+
+        CacheContainer.CurrentVersion = Version.Value;
+
         await LoadScript("_content/GoogleCaptchaComponent/Scripts/JsOfReCAPTCHA.js");
 
-
-        if (CaptchaConfiguration.Value.CaptchaVersion == Configuration.CaptchaConfiguration.Version.V3)
-            await LoadScript($"https://www.google.com/recaptcha/api.js?render={CaptchaConfiguration.Value.SiteKey}");
+        if (Version == Configuration.CaptchaConfiguration.Version.V3)
+            await LoadScript($"https://www.google.com/recaptcha/api.js?render={CurrentConfiguration.V3SiteKey}");
 
         else
-            await LoadScript("https://www.google.com/recaptcha/api.js");
+            await LoadScript($"https://www.google.com/recaptcha/api.js");
     }
 
     private async Task LoadScript(string scriptPath)
@@ -113,49 +141,36 @@ public partial class GoogleRecaptcha
     [JSInvokable, EditorBrowsable(EditorBrowsableState.Never)]
     public virtual async Task CallbackOnSuccess(string response)
     {
-        if (CaptchaConfiguration.Value.ServerSideValidationRequired)
+
+        try
         {
-            if (ServerSideValidationHandler == null)
+            if (ServerSideValidationHandler is null)
+                throw new CallBackDelegateException("There is no handler related to server validation");
+
+            var serverSideValidationResult = await ServerSideValidationHandler(new ServerSideCaptchaValidationRequestModel(response));
+
+
+            if (!serverSideValidationResult.IsSuccess)
             {
-                if (CaptchaConfiguration.Value.CaptchaVersion == Configuration.CaptchaConfiguration.Version.V3)
+                if (!ServerValidationErrorCallBack.HasDelegate)
                     throw new CallBackDelegateException(
-                        $"Server side validation is required for reCaptcha-V3 but there is no handler found for {nameof(ServerSideValidationHandler)}");
+                        $"Server side reCaptcha validation is failed but no handler found for {nameof(ServerValidationErrorCallBack)}");
 
-                else
-                    throw new CallBackDelegateException(
-                        $"Server side validation is set to true but there is no handler found for {nameof(ServerSideValidationHandler)}");
+                await ServerValidationErrorCallBack.InvokeAsync(
+                    new CaptchaServerSideValidationErrorEventArgs(serverSideValidationResult.ValidationMessage));
             }
 
+            if (!SuccessCallBack.HasDelegate)
+                throw new CallBackDelegateException(
+                    $"no Callback handler found for {nameof(SuccessCallBack)}");
 
-            try
-            {
-                var serverSideValidationResult = await ServerSideValidationHandler(new ServerSideCaptchaValidationRequestModel(response));
-
-
-                if (!serverSideValidationResult.IsSuccess)
-                {
-                    if (!ServerValidationErrorCallBack.HasDelegate)
-                        throw new CallBackDelegateException(
-                            $"Server side reCaptcha validation is failed but no handler found for {nameof(ServerValidationErrorCallBack)}");
-
-                    await ServerValidationErrorCallBack.InvokeAsync(
-                        new CaptchaServerSideValidationErrorEventArgs(serverSideValidationResult.ValidationMessage));
-                }
-
-            }
-
-            catch (Exception e)
-            {
-                throw new CallBackDelegateException("Error invoking related server validation callback", e);
-            }
+            await SuccessCallBack.InvokeAsync(new CaptchaSuccessEventArgs(response));
         }
 
-
-        if (!SuccessCallBack.HasDelegate)
-            throw new CallBackDelegateException(
-                $"no Callback handler found for {nameof(SuccessCallBack)}");
-
-        await SuccessCallBack.InvokeAsync(new CaptchaSuccessEventArgs(response));
+        catch (Exception e) when(e is not CallBackDelegateException)
+        {
+            throw new CallBackDelegateException("Error invoking related server validation callback", e);
+        }
     }
 
     [JSInvokable, EditorBrowsable(EditorBrowsableState.Never)]

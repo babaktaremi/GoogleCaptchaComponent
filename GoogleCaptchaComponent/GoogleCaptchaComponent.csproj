@@ -1,19 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>Babak Taremi</Authors>
-    <Version>3.6.0</Version>
-    <Description>Simple Package for using google reCaptcha in blazor web assembly</Description>
+    <Version>4.0.0</Version>
+    <Description>use google reCaptcha in Blazor application</Description>
     <PackageProjectUrl>https://github.com/babaktaremi/GoogleCaptchaComponent</PackageProjectUrl>
 	  <PackageIcon>icon.png</PackageIcon>
     <RepositoryUrl>https://github.com/babaktaremi/GoogleCaptchaComponent</RepositoryUrl>
-    <PackageTags>blazor,blazor captcha, Net6, wasm, blazor google captcha,reCaptcha,blazor reCaptcha</PackageTags>
+    <PackageTags>blazor,blazor captcha, wasm, blazor google captcha,reCaptcha,blazor reCaptcha</PackageTags>
     <Title>Blazor Google Captcha Component</Title>
     <Product>$(AssemblyName)-Blazor</Product>
 	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
-	  <PackageReleaseNotes>Fixed Bug Of Cache Container In Server Side</PackageReleaseNotes>
+	  <PackageReleaseNotes>Updated to NET 8 . Added theme configuration and having both V2 and V3 at the same time in same project</PackageReleaseNotes>
 	  <Copyright>Babak Taremi</Copyright>
   </PropertyGroup>
 
@@ -24,8 +24,8 @@
 
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components" Version="7.0.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Components" Version="8.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.0" />
   </ItemGroup>
 
 
