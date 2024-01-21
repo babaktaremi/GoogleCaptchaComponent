@@ -29,7 +29,7 @@ public class CaptchaConfiguration
     public Theme DefaultTheme { get; set; }
 
     /// <summary>
-    /// Setting default captcha language. This language will be used if there is no theme explicitly declared on component. Note that language is only applied to V2
+    /// Setting default captcha language. This language will be used if there is no language explicitly declared on component. Note that language is only applied to V2
     /// </summary>
     public CaptchaLanguages Language { get; set; } = CaptchaLanguages.English;
 

@@ -3,6 +3,7 @@ using GoogleCaptchaComponent;
 using GoogleCaptchaComponent.Configuration;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.Extensions.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,7 +18,7 @@ builder.Services.AddGoogleCaptcha(options =>
     options.V3SiteKey = "Your V3 Site key from Google developer Console";
     options.V2SiteKey = "Your V2 site key from Google developer Console";
     options.DefaultTheme = CaptchaConfiguration.Theme.Dark;
-    options.Language = CaptchaConfiguration.CaptchaLanguages.Arabic;
+    options.Language = CaptchaConfiguration.CaptchaLanguages.English;
 });
 
 var app = builder.Build();
