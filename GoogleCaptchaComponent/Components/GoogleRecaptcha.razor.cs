@@ -68,6 +68,12 @@ public partial class GoogleRecaptcha
     /// </summary>
     public CaptchaConfiguration CurrentConfiguration => CaptchaConfiguration.Value;
 
+    /// <summary>
+    /// Specified the default language for this specific component. If its not specified the default will be used.
+    /// </summary>
+    [Parameter]
+    public CaptchaLanguages Language { get; set; }
+
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -92,7 +98,7 @@ public partial class GoogleRecaptcha
 
             if (Version == Configuration.CaptchaConfiguration.Version.V2)
                 await Js.InvokeVoidAsync("render_recaptcha_v2", DotNetObjectReference.Create(this), "recaptcha_container",
-                    CurrentConfiguration.V2SiteKey, Theme.ToString()?.ToLower());
+                    CurrentConfiguration.V2SiteKey, Theme.ToString()?.ToLower(),Language.Language);
             else
                 await Js.InvokeVoidAsync("render_recaptcha_v3", DotNetObjectReference.Create(this),
                     CurrentConfiguration.V3SiteKey, Theme.ToString()?.ToLower());
@@ -109,6 +115,7 @@ public partial class GoogleRecaptcha
     {
         Version ??= CurrentConfiguration.DefaultVersion;
         Theme ??= CurrentConfiguration.DefaultTheme;
+        Language ??= CurrentConfiguration.Language;
 
         if (Version.Value == Configuration.CaptchaConfiguration.Version.V2 &&
             string.IsNullOrEmpty(CurrentConfiguration.V2SiteKey))
