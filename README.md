@@ -55,10 +55,13 @@
             configuration.V3SiteKey = "Your V3 Site key from Google developer console";
             configuration.DefaultVersion = CaptchaConfiguration.Version.V2;
             configuration.DefaultTheme = CaptchaConfiguration.Theme.Light;
+            configuration.DefaultLanguage = CaptchaConfiguration.CaptchaLanguages.English;
         });
  ```
  `DefaultVersion` is the version that will be used if no other versions are specified in component parameters. 
  `DefaultTheme`  is the theme that will be used if no other themes are specified in component parameters. Note that you can only apply version for Recaptcha V2 at the moment.
+ `DefaultLanguage` is the language that will be used if no other language are specified in component parameters. Note that this can only
+ apply for ReCaptcha V2 at the moment.
  
  Add the following code to `_Imports.razor` file
  
@@ -86,7 +89,9 @@
                  ServerValidationErrorCallBack="ServerSideValidationError"
                  ServerSideValidationHandler="ServerSideValidationHandler"
                  Version="CaptchaConfiguration.Version.V2"
-                 Theme="CaptchaConfiguration.Theme.Light">
+                 Theme="CaptchaConfiguration.Theme.Light"
+                 Language="CaptchaConfiguration.CaptchaLanguages.English"
+                 >
 </GoogleRecaptcha>
  ```
  
@@ -154,6 +159,8 @@
 **`Version`** : You can specify version explicitly via this parameter . If you don't specify version , the `DefaultVersion` will be used instead.
 
 **`Theme`** : You can specify theme via this parameter (Theme is only applied to V2). If you don't specify theme , the `DefaultTheme` will be used instead.
+
+**`Language`**: You can specify the ReCaptcha language via this parameter (Language is only applied to V2), If you don't specify the language, the `DefaultLanguage` will be used instead which is the English Language.
 
 ## Refreshing The Captcha Manually
 

@@ -18,7 +18,7 @@ builder.Services.AddGoogleCaptcha(options =>
     options.V3SiteKey = "Your V3 Site key from Google developer Console";
     options.V2SiteKey = "Your V2 site key from Google developer Console";
     options.DefaultTheme = CaptchaConfiguration.Theme.Dark;
-    options.Language = CaptchaConfiguration.CaptchaLanguages.English;
+    options.DefaultLanguage = CaptchaConfiguration.CaptchaLanguages.English;
 });
 
 var app = builder.Build();

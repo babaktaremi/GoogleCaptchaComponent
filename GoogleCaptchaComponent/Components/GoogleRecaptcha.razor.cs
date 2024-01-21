@@ -115,7 +115,7 @@ public partial class GoogleRecaptcha
     {
         Version ??= CurrentConfiguration.DefaultVersion;
         Theme ??= CurrentConfiguration.DefaultTheme;
-        Language ??= CurrentConfiguration.Language;
+        Language ??= CurrentConfiguration.DefaultLanguage;
 
         if (Version.Value == Configuration.CaptchaConfiguration.Version.V2 &&
             string.IsNullOrEmpty(CurrentConfiguration.V2SiteKey))
