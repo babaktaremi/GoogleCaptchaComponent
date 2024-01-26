@@ -55,7 +55,7 @@
             configuration.V3SiteKey = "Your V3 Site key from Google developer console";
             configuration.DefaultVersion = CaptchaConfiguration.Version.V2;
             configuration.DefaultTheme = CaptchaConfiguration.Theme.Light;
-            configuration.DefaultLanguage = CaptchaConfiguration.CaptchaLanguages.English;
+            configuration.DefaultLanguage = CaptchaLanguages.English;
         });
  ```
  `DefaultVersion` is the version that will be used if no other versions are specified in component parameters. 
@@ -90,7 +90,7 @@
                  ServerSideValidationHandler="ServerSideValidationHandler"
                  Version="CaptchaConfiguration.Version.V2"
                  Theme="CaptchaConfiguration.Theme.Light"
-                 Language="CaptchaConfiguration.CaptchaLanguages.English"
+                 Language="CaptchaLanguages.English"
                  >
 </GoogleRecaptcha>
  ```
