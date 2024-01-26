@@ -4,7 +4,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>Babak Taremi</Authors>
-    <Version>4.0.0</Version>
+    <Version>4.1.0</Version>
     <Description>use google reCaptcha in Blazor application</Description>
     <PackageProjectUrl>https://github.com/babaktaremi/GoogleCaptchaComponent</PackageProjectUrl>
 	  <PackageIcon>icon.png</PackageIcon>
@@ -13,7 +13,7 @@
     <Title>Blazor Google Captcha Component</Title>
     <Product>$(AssemblyName)-Blazor</Product>
 	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
-	  <PackageReleaseNotes>Updated to NET 8 . Added theme configuration and having both V2 and V3 at the same time in same project</PackageReleaseNotes>
+	  <PackageReleaseNotes>Added option to support different languages</PackageReleaseNotes>
 	  <Copyright>Babak Taremi</Copyright>
   </PropertyGroup>
 

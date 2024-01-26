@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using GoogleCaptchaComponent;
 using GoogleCaptchaComponent.Configuration;
+using GoogleCaptchaComponent.Models;
 using Microsoft.Extensions.Configuration.Memory;
 using Microsoft.AspNetCore.Components.Web;
 
@@ -38,7 +39,7 @@ public class Program
             configuration.V3SiteKey = v3SiteKey;
             configuration.DefaultVersion = CaptchaConfiguration.Version.V2;
             configuration.DefaultTheme = CaptchaConfiguration.Theme.Light;
-            configuration.DefaultLanguage = CaptchaConfiguration.CaptchaLanguages.English;
+            configuration.DefaultLanguage = CaptchaLanguages.English;
         });
 
         builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
