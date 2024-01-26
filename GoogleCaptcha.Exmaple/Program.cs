@@ -38,6 +38,7 @@ public class Program
             configuration.V3SiteKey = v3SiteKey;
             configuration.DefaultVersion = CaptchaConfiguration.Version.V2;
             configuration.DefaultTheme = CaptchaConfiguration.Theme.Light;
+            configuration.DefaultLanguage = CaptchaConfiguration.CaptchaLanguages.English;
         });
 
         builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
