@@ -19,8 +19,6 @@ namespace GoogleCaptchaComponent.Components;
 /// </summary>
 public partial class GoogleRecaptcha
 {
-
-
     [Inject] public IJSRuntime Js { get; set; }
     [Inject] internal IOptions<CaptchaConfiguration> CaptchaConfiguration { get; set; }
     [Inject] internal CacheContainer CacheContainer { get; set; }
@@ -34,14 +32,14 @@ public partial class GoogleRecaptcha
     /// <summary>
     /// Specify the version to be used for this specific component.If null the default version will be used
     /// </summary>
-    [Parameter] 
+    [Parameter]
     public CaptchaConfiguration.Version? Version { get; set; }
 
 
     /// <summary>
     /// Specify the theme to be used for this specific component. If null the default theme will be used
     /// </summary>
-    [Parameter] 
+    [Parameter]
     public CaptchaConfiguration.Theme? Theme { get; set; }
 
 
@@ -74,18 +72,13 @@ public partial class GoogleRecaptcha
     [Parameter]
     public CaptchaLanguages Language { get; set; }
 
-
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-
-
         if (firstRender)
         {
             await InitializeScripts();
             await HandleRecaptchaCallBackFunctions();
         }
-
-
 
         //await base.OnAfterRenderAsync(firstRender);
     }
@@ -94,11 +87,9 @@ public partial class GoogleRecaptcha
     {
         try
         {
-            
-
             if (Version == Configuration.CaptchaConfiguration.Version.V2)
                 await Js.InvokeVoidAsync("render_recaptcha_v2", DotNetObjectReference.Create(this), "recaptcha_container",
-                    CurrentConfiguration.V2SiteKey, Theme.ToString()?.ToLower(),Language.Language);
+                    CurrentConfiguration.V2SiteKey, Theme.ToString()?.ToLower(), Language.Language);
             else
                 await Js.InvokeVoidAsync("render_recaptcha_v3", DotNetObjectReference.Create(this),
                     CurrentConfiguration.V3SiteKey, Theme.ToString()?.ToLower());
@@ -148,36 +139,49 @@ public partial class GoogleRecaptcha
     [JSInvokable, EditorBrowsable(EditorBrowsableState.Never)]
     public virtual async Task CallbackOnSuccess(string response)
     {
-
         try
         {
-            if (ServerSideValidationHandler is null)
-                throw new CallBackDelegateException("There is no handler related to server validation");
-
-            var serverSideValidationResult = await ServerSideValidationHandler(new ServerSideCaptchaValidationRequestModel(response));
-
-
-            if (!serverSideValidationResult.IsSuccess)
+            var serverSideValidationResult = await GetServerSideValidationResult(response).ConfigureAwait(false);
+            if (serverSideValidationResult.IsSuccess)
             {
-                if (!ServerValidationErrorCallBack.HasDelegate)
-                    throw new CallBackDelegateException(
-                        $"Server side reCaptcha validation is failed but no handler found for {nameof(ServerValidationErrorCallBack)}");
-
-                await ServerValidationErrorCallBack.InvokeAsync(
-                    new CaptchaServerSideValidationErrorEventArgs(serverSideValidationResult.ValidationMessage));
+                await HandleSuccess(response);
             }
-
-            if (!SuccessCallBack.HasDelegate)
-                throw new CallBackDelegateException(
-                    $"no Callback handler found for {nameof(SuccessCallBack)}");
-
-            await SuccessCallBack.InvokeAsync(new CaptchaSuccessEventArgs(response));
+            else
+            {
+                await HandleFailure(serverSideValidationResult);
+            }
         }
-
-        catch (Exception e) when(e is not CallBackDelegateException)
+        catch (Exception e) when (e is not CallBackDelegateException)
         {
             throw new CallBackDelegateException("Error invoking related server validation callback", e);
         }
+    }
+
+    private async Task HandleFailure(ServerSideCaptchaValidationResultModel serverSideValidationResult)
+    {
+        if (ServerValidationErrorCallBack.HasDelegate)
+            await ServerValidationErrorCallBack.InvokeAsync(
+                new CaptchaServerSideValidationErrorEventArgs(serverSideValidationResult.ValidationMessage));
+        else
+            throw new CallBackDelegateException(
+                                $"Server side reCaptcha validation is failed but no handler found for {nameof(ServerValidationErrorCallBack)}");
+    }
+
+    private async Task HandleSuccess(string response)
+    {
+        if (SuccessCallBack.HasDelegate)
+            await SuccessCallBack.InvokeAsync(new CaptchaSuccessEventArgs(response));
+        else
+            throw new CallBackDelegateException(
+                                $"no Callback handler found for {nameof(SuccessCallBack)}");
+    }
+
+    private Task<ServerSideCaptchaValidationResultModel> GetServerSideValidationResult(string response)
+    {
+        if (ServerSideValidationHandler is null)
+            throw new CallBackDelegateException("There is no handler related to server validation");
+
+        return ServerSideValidationHandler(new ServerSideCaptchaValidationRequestModel(response));
     }
 
     [JSInvokable, EditorBrowsable(EditorBrowsableState.Never)]
@@ -203,7 +207,4 @@ public partial class GoogleRecaptcha
 
         await ServerValidationErrorCallBack.InvokeAsync(new CaptchaServerSideValidationErrorEventArgs(message));
     }
-
-
-
 }

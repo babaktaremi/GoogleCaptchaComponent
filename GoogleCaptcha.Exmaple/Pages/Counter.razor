@@ -9,14 +9,13 @@
 
 <p>Current count: @currentCount</p>
 
-<GoogleRecaptcha 
-    SuccessCallBack="SuccessCallBack" 
-    TimeOutCallBack="TimeOutCallBack" 
-    ServerValidationErrorCallBack="ServerSideValidationError" 
-    ServerSideValidationHandler="ServerSideValidationHandler"
-    Version="CaptchaConfiguration.Version.V2"
-    Theme="CaptchaConfiguration.Theme.Dark"
-    Language="CaptchaLanguages.EnglishUK">
+<GoogleRecaptcha SuccessCallBack="SuccessCallBack"
+                 TimeOutCallBack="TimeOutCallBack"
+                 ServerValidationErrorCallBack="ServerSideValidationError"
+                 ServerSideValidationHandler="ServerSideValidationHandler"
+                 Version="CaptchaConfiguration.Version.V2"
+                 Theme="CaptchaConfiguration.Theme.Dark"
+                 Language="CaptchaLanguages.EnglishUK">
 </GoogleRecaptcha>
 
 
@@ -24,7 +23,7 @@
 <button class="btn btn-primary" @onclick="ReloadRecapatcha" disabled="@Disabled">reload</button>
 
 @code {
-    
+
     void TimeOutCallBack(CaptchaTimeOutEventArgs e)
     {
         Disabled = true;
@@ -33,11 +32,11 @@
     }
 
 
-     void SuccessCallBack(CaptchaSuccessEventArgs e)
+    void SuccessCallBack(CaptchaSuccessEventArgs e)
     {
         Disabled = false;
 
-         captchaResponse = e.CaptchaResponse;
+        captchaResponse = e.CaptchaResponse;
 
         base.StateHasChanged();
     }
@@ -72,7 +71,7 @@
 
         return new ServerSideCaptchaValidationResultModel(true, "Success");
 
-    // return new ServerSideCaptchaValidationResultModel(apiResult.Success, string.Join("\n",apiResult.ErrorCodes ?? new List<string>(){"No Error"}));
+        // return new ServerSideCaptchaValidationResultModel(apiResult.Success, string.Join("\n",apiResult.ErrorCodes ?? new List<string>(){"No Error"}));
     }
 
     private async Task ReloadRecapatcha()
