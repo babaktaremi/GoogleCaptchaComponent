@@ -7,7 +7,6 @@ namespace GoogleCaptchaComponent.Configuration;
 /// </summary>
 public class CaptchaConfiguration
 {
-    private bool _serverValidationEnabled;
     /// <summary>
     /// Site key that will be used for V2 Recaptcha. 
     /// </summary>
@@ -42,6 +41,4 @@ public class CaptchaConfiguration
     {
         Dark,Light
     }
-
-    
 }
