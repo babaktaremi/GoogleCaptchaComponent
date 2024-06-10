@@ -12,10 +12,10 @@
     }.bind(this), 1000);
 };
 
-function render_recaptcha_v3(dotNetObj, sitekey) {
+function render_recaptcha_v3(dotNetObj, sitekey, theme, action) {
     setTimeout(function () {
         grecaptcha.ready(function () {
-            grecaptcha.execute(sitekey).then(function (token) {
+            grecaptcha.execute(sitekey, {action: action}).then(function (token) {
                 dotNetObj.invokeMethodAsync('CallbackOnSuccess', token);
             });
         });

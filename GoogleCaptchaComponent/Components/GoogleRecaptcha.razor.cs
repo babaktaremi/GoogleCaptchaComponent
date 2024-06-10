@@ -62,6 +62,12 @@ public partial class GoogleRecaptcha
     public Func<ServerSideCaptchaValidationRequestModel, Task<ServerSideCaptchaValidationResultModel>> ServerSideValidationHandler { get; set; }
 
     /// <summary>
+    /// Google captcha v3 action name
+    /// </summary>
+    [Parameter]
+    public string Action { get; set; }
+    
+    /// <summary>
     /// Specified configuration in startup
     /// </summary>
     public CaptchaConfiguration CurrentConfiguration => CaptchaConfiguration.Value;
@@ -92,7 +98,7 @@ public partial class GoogleRecaptcha
                     CurrentConfiguration.V2SiteKey, Theme.ToString()?.ToLower(), Language.Language);
             else
                 await Js.InvokeVoidAsync("render_recaptcha_v3", DotNetObjectReference.Create(this),
-                    CurrentConfiguration.V3SiteKey, Theme.ToString()?.ToLower());
+                    CurrentConfiguration.V3SiteKey, Theme.ToString()?.ToLower(), Action ?? "");
         }
         catch (Exception e)
         {
