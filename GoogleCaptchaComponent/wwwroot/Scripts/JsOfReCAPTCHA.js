@@ -12,13 +12,18 @@
     }.bind(this), 1000);
 };
 
-function render_recaptcha_v3(dotNetObj, sitekey) {
-    setTimeout(function () {
-        grecaptcha.ready(function () {
-            grecaptcha.execute(sitekey).then(function (token) {
-                dotNetObj.invokeMethodAsync('CallbackOnSuccess', token);
-            });
+
+function execute_recaptcha_v3(dotNetObj, sitekey, action) {
+    grecaptcha.ready(function () {
+        grecaptcha.execute(sitekey, {action: action}).then(function (token) {
+            dotNetObj.invokeMethodAsync('CallbackOnSuccess', token);
         });
+    });
+};
+
+function render_recaptcha_v3(dotNetObj, sitekey, action) {
+    setTimeout(function () {
+        execute_recaptcha_v3(dotNetObj, sitekey, action);
     }.bind(this), 1000);
 };
 
