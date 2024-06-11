@@ -162,6 +162,8 @@
 
 **`Language`**: You can specify the ReCaptcha language via this parameter (Language is only applied to V2), If you don't specify the language, the `DefaultLanguage` will be used instead which is the English Language.
 
+**`Action`**: You can specify the action name that will be used for reCaptcha V3. If you don't specify the action, then none will be used.
+
 ## Refreshing The Captcha Manually
 
 Inject the ```IRecaptchaService``` and call the ```ReloadAsync``` method. If there is a recaptcha component on page , it will reload the component.
