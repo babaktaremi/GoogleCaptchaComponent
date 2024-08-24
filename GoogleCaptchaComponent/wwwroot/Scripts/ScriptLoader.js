@@ -11,7 +11,7 @@ window.loadScript = function (scriptPath) {
 
     return new Promise(function (resolve, reject) {
         // create JS library script element
-        var script = document.createElement("script");
+        const script = document.createElement("script");
 
         if (scriptPath === "https://www.google.com/recaptcha/api.js") {
             script.src = scriptPath + "?render=explicit";
