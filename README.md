@@ -162,6 +162,10 @@
 
 **`Language`**: You can specify the ReCaptcha language via this parameter (Language is only applied to V2), If you don't specify the language, the `DefaultLanguage` will be used instead which is the English Language.
 
+**`Action`**: You can specify the action name that will be used for reCaptcha V3. If you don't specify the action, then none will be used.
+
+**`RenderOnLoad`**: If set to false and if the captcha is V3, the captcha will not be rendered on page load. Instead you can manually execute the captcha on a action, like a form submission. If the captcha is V2, this parameter will be ignored.
+
 ## Refreshing The Captcha Manually
 
 Inject the ```IRecaptchaService``` and call the ```ReloadAsync``` method. If there is a recaptcha component on page , it will reload the component.
@@ -179,8 +183,41 @@ Inject the ```IRecaptchaService``` and call the ```ReloadAsync``` method. If the
    }
 ```
 
+## Captcha V3 Actions
+With Captcha V3 it is recommended if you are protecting an action like a user logging in to only execute it when the action happens, not on page load.
+As well as allowing you to specify the action name in each place you execute reCAPTCHA, you enable the following new features:
 
+* A detailed break-down of data for your top ten actions in the admin console
+* Adaptive risk analysis based on the context of the action, because abusive behavior can vary.
 
+A full example can be found in [CounterV3 for blazor WASM](GoogleCaptcha.Exmaple/Pages/CounterV3.razor) or [CounterV3 for Server Side Blazor](GoogleCaptcha.Example.Server/Pages/CounterV3.razor)
+
+If you would like to use this then when rendering a reCAPTCHA V3 component you can specify the action name, a ref, and not to render on load like this:
+```razor
+<GoogleRecaptcha 
+    @ref="captcha"
+    Action="@Action"
+    RenderOnLoad="false"
+    ...
+/>
+@code {
+    GoogleRecaptcha captcha;
+...
+```
+Then when calling your action you execute the captcha and then inside of the SuccessCallBack you can submit the form withe captcha response to validate on the server.
+```csharp
+    //Can be a form submission or any other action
+    private async Task ExecuteAction()
+    {
+        await captcha.ExecuteAsync();
+    }
+    
+      void SuccessCallBack(CaptchaSuccessEventArgs e)
+    {
+        var response = e.CaptchaResponse;
+       //Submit form with response
+    }
+```
 
 ## Demo
 

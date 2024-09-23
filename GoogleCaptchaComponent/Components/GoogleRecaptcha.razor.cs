@@ -62,6 +62,18 @@ public partial class GoogleRecaptcha
     public Func<ServerSideCaptchaValidationRequestModel, Task<ServerSideCaptchaValidationResultModel>> ServerSideValidationHandler { get; set; }
 
     /// <summary>
+    /// Google captcha v3 action name
+    /// </summary>
+    [Parameter]
+    public string Action { get; set; }
+
+    /// <summary>
+    /// if true it will render on load if false for v3 it will render on the ExecuteV3 method
+    /// </summary>
+    [Parameter]
+    public bool RenderOnLoad {get; set;} = true;
+    
+    /// <summary>
     /// Specified configuration in startup
     /// </summary>
     public CaptchaConfiguration CurrentConfiguration => CaptchaConfiguration.Value;
@@ -83,6 +95,10 @@ public partial class GoogleRecaptcha
         //await base.OnAfterRenderAsync(firstRender);
     }
 
+    public async Task ExecuteV3() =>
+        await Js.InvokeVoidAsync("execute_recaptcha_v3", DotNetObjectReference.Create(this),
+            CurrentConfiguration.V3SiteKey, Action ?? "");
+    
     private async Task HandleRecaptchaCallBackFunctions()
     {
         try
@@ -91,8 +107,9 @@ public partial class GoogleRecaptcha
                 await Js.InvokeVoidAsync("render_recaptcha_v2", DotNetObjectReference.Create(this), "recaptcha_container",
                     CurrentConfiguration.V2SiteKey, Theme.ToString()?.ToLower(), Language.Language);
             else
-                await Js.InvokeVoidAsync("render_recaptcha_v3", DotNetObjectReference.Create(this),
-                    CurrentConfiguration.V3SiteKey, Theme.ToString()?.ToLower());
+                if (RenderOnLoad)
+                    await Js.InvokeVoidAsync("render_recaptcha_v3", DotNetObjectReference.Create(this),
+                        CurrentConfiguration.V3SiteKey, Action ?? "");
         }
         catch (Exception e)
         {
