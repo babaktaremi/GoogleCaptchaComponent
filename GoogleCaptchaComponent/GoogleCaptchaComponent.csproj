@@ -4,7 +4,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>Babak Taremi</Authors>
-    <Version>4.2.0</Version>
+    <Version>5.0.0</Version>
     <Description>use google reCaptcha in Blazor application</Description>
     <PackageProjectUrl>https://github.com/babaktaremi/GoogleCaptchaComponent</PackageProjectUrl>
 	  <PackageIcon>icon.png</PackageIcon>
@@ -13,7 +13,7 @@
     <Title>Blazor Google Captcha Component</Title>
     <Product>$(AssemblyName)-Blazor</Product>
 	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
-	  <PackageReleaseNotes>Minor refactor in OnSuccess flow and validations</PackageReleaseNotes>
+	  <PackageReleaseNotes>Added Action parameter for V3 methods</PackageReleaseNotes>
 	  <Copyright>Babak Taremi</Copyright>
   </PropertyGroup>
 

@@ -18,7 +18,7 @@
                  Version="CaptchaConfiguration.Version.V3"
                  Theme="CaptchaConfiguration.Theme.Dark"
                  Language="CaptchaLanguages.EnglishUK"
-                 Action="@Action"
+                 DefaultAction="DefaultTestAction"
                  RenderOnLoad="false"
 >
 </GoogleRecaptcha>
@@ -64,7 +64,7 @@
     {
         Disabled = true;
         //Calls the captcha on the action execution
-        await captcha.ExecuteV3();
+        await captcha.ExecuteV3WithActionAsync(Action);
         currentCount++;
     }
 

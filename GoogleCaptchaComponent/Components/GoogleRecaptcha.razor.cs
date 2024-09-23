@@ -59,20 +59,21 @@ public partial class GoogleRecaptcha
     /// Handler for implementing server side validation
     /// </summary>
     [Parameter]
-    public Func<ServerSideCaptchaValidationRequestModel, Task<ServerSideCaptchaValidationResultModel>> ServerSideValidationHandler { get; set; }
+    public Func<ServerSideCaptchaValidationRequestModel, Task<ServerSideCaptchaValidationResultModel>>
+        ServerSideValidationHandler { get; set; }
 
     /// <summary>
-    /// Google captcha v3 action name
+    /// Google captcha v3 default action name
     /// </summary>
     [Parameter]
-    public string Action { get; set; }
+    public string DefaultAction { get; set; } = string.Empty;
 
     /// <summary>
     /// if true it will render on load if false for v3 it will render on the ExecuteV3 method
     /// </summary>
     [Parameter]
-    public bool RenderOnLoad {get; set;} = true;
-    
+    public bool RenderOnLoad { get; set; } = true;
+
     /// <summary>
     /// Specified configuration in startup
     /// </summary>
@@ -95,21 +96,31 @@ public partial class GoogleRecaptcha
         //await base.OnAfterRenderAsync(firstRender);
     }
 
-    public async Task ExecuteV3() =>
+    /// <summary>
+    /// Executes the V3 Recaptcha With The Given Action Name. If RenderOnLoad Is False This Method Should Be Used.
+    /// </summary>
+    /// <param name="actionName">action name to send. If empty the DefaultActionName will be used</param>
+    /// <throws>InvalidCaptchaVersionExceptionException</throws>
+    public async Task ExecuteV3WithActionAsync(string actionName = "")
+    {
+        if (Version == Configuration.CaptchaConfiguration.Version.V2)
+            throw new InvalidCaptchaVersionExceptionException($"{nameof(ExecuteV3WithActionAsync)} only works with V3. Current component version is V2");
+        
         await Js.InvokeVoidAsync("execute_recaptcha_v3", DotNetObjectReference.Create(this),
-            CurrentConfiguration.V3SiteKey, Action ?? "");
-    
+            CurrentConfiguration.V3SiteKey, string.IsNullOrEmpty(actionName) ? DefaultAction : actionName);
+    }
+
     private async Task HandleRecaptchaCallBackFunctions()
     {
         try
         {
             if (Version == Configuration.CaptchaConfiguration.Version.V2)
-                await Js.InvokeVoidAsync("render_recaptcha_v2", DotNetObjectReference.Create(this), "recaptcha_container",
+                await Js.InvokeVoidAsync("render_recaptcha_v2", DotNetObjectReference.Create(this),
+                    "recaptcha_container",
                     CurrentConfiguration.V2SiteKey, Theme.ToString()?.ToLower(), Language.Language);
-            else
-                if (RenderOnLoad)
-                    await Js.InvokeVoidAsync("render_recaptcha_v3", DotNetObjectReference.Create(this),
-                        CurrentConfiguration.V3SiteKey, Action ?? "");
+            else if (RenderOnLoad)
+                await Js.InvokeVoidAsync("render_recaptcha_v3", DotNetObjectReference.Create(this),
+                    CurrentConfiguration.V3SiteKey, DefaultAction ?? "");
         }
         catch (Exception e)
         {
@@ -181,7 +192,7 @@ public partial class GoogleRecaptcha
                 new CaptchaServerSideValidationErrorEventArgs(serverSideValidationResult.ValidationMessage));
         else
             throw new CallBackDelegateException(
-                                $"Server side reCaptcha validation is failed but no handler found for {nameof(ServerValidationErrorCallBack)}");
+                $"Server side reCaptcha validation is failed but no handler found for {nameof(ServerValidationErrorCallBack)}");
     }
 
     private async Task HandleSuccess(string response)
@@ -190,7 +201,7 @@ public partial class GoogleRecaptcha
             await SuccessCallBack.InvokeAsync(new CaptchaSuccessEventArgs(response));
         else
             throw new CallBackDelegateException(
-                                $"no Callback handler found for {nameof(SuccessCallBack)}");
+                $"no Callback handler found for {nameof(SuccessCallBack)}");
     }
 
     private Task<ServerSideCaptchaValidationResultModel> GetServerSideValidationResult(string response)

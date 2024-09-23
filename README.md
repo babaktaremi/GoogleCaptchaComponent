@@ -196,7 +196,7 @@ If you would like to use this then when rendering a reCAPTCHA V3 component you c
 ```razor
 <GoogleRecaptcha 
     @ref="captcha"
-    Action="@Action"
+    DefaultAction="DefaultAction"
     RenderOnLoad="false"
     ...
 />
@@ -204,12 +204,12 @@ If you would like to use this then when rendering a reCAPTCHA V3 component you c
     GoogleRecaptcha captcha;
 ...
 ```
-Then when calling your action you execute the captcha and then inside of the SuccessCallBack you can submit the form withe captcha response to validate on the server.
+Then when calling your action you execute the captcha and then inside of the SuccessCallBack you can submit the form with captcha response to validate on the server.
 ```csharp
     //Can be a form submission or any other action
     private async Task ExecuteAction()
     {
-        await captcha.ExecuteAsync();
+        await captcha.ExecuteV3WithActionAsync();
     }
     
       void SuccessCallBack(CaptchaSuccessEventArgs e)
@@ -218,6 +218,9 @@ Then when calling your action you execute the captcha and then inside of the Suc
        //Submit form with response
     }
 ```
+
+The ```ExecuteV3WithActionAsync``` also takes an action name. If nothing is provided , the ```DefaultAction``` will be used. in order to use actions, you have to provide the value of one these parameters (Either ```actionName``` parameter on ```ExecuteV3WithActionAsync``` method or ```DefaultAction```)
+Also note that this method will throw ```InvalidCaptchaVersionExceptionException``` if used on V2 version.
 
 ## Demo
 
