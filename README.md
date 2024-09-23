@@ -28,6 +28,8 @@
 
 **-V4 :** Update project to NET 8 . Theme configuration added and now both V2 and V3 can be used in the same project and different pages (based on your needs you can use V2 in one page and V3 in another page). Also server side validation is required for both V2 and V3 in this version . This version also have some minor breaking changes. So keep that in mind when updating.
 
+**-V5 :** Added "Action" parameter for V3 methods
+
 **future:** There is a long way ahead. Keep posted for more updates and features. I think about version 5 all major updates will have huge breaking changes. I will continue supporting and updating this project until either I'm too old for it or an official solution is available for it. 
 
 ## Intallation
