@@ -169,7 +169,7 @@ public partial class GoogleRecaptcha
     {
         try
         {
-            var serverSideValidationResult = await GetServerSideValidationResult(response).ConfigureAwait(false);
+            var serverSideValidationResult = await GetServerSideValidationResult(response);
             if (serverSideValidationResult.IsSuccess)
             {
                 await HandleSuccess(response);

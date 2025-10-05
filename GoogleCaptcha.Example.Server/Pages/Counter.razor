@@ -63,6 +63,8 @@
     {
         using var httpClient = new HttpClient();
 
+        await Task.Delay(3000);
+
         //var apiResult = await httpClient.GetFromJsonAsync<GoogleCaptchaCheckResponseResult>($"https://localhost:7113/VerifyCaptcha?token={requestModel.CaptchaResponse}");
 
         return new ServerSideCaptchaValidationResultModel(true, "Success");
