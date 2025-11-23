@@ -149,10 +149,10 @@ public partial class GoogleRecaptcha
         await LoadScript("_content/GoogleCaptchaComponent/Scripts/JsOfReCAPTCHA.js");
 
         if (Version == Configuration.CaptchaConfiguration.Version.V3)
-            await LoadScript($"https://www.google.com/recaptcha/api.js?render={CurrentConfiguration.V3SiteKey}");
+            await LoadScript($"https://www.google.com/recaptcha/enterprise.js?render={CurrentConfiguration.V3SiteKey}");
 
         else
-            await LoadScript($"https://www.google.com/recaptcha/api.js");
+            await LoadScript($"https://www.google.com/recaptcha/enterprise.js");
     }
 
     private async Task LoadScript(string scriptPath)
