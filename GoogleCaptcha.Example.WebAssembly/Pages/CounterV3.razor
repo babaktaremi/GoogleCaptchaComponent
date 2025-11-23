@@ -1,0 +1,88 @@
+﻿@page "/counterV3"
+@inject IRecaptchaService RecaptchaService
+<h1>Counter</h1>
+<h3 class="text-danger">@errorMessage</h3>
+<h5 class="text-success">@captchaResponse</h5>
+
+<p>Current count: @currentCount</p>
+
+<GoogleRecaptcha
+                 @ref="captcha"
+                 SuccessCallBack="SuccessCallBack"
+                 TimeOutCallBack="TimeOutCallBack"
+                 ServerValidationErrorCallBack="ServerSideValidationError"
+                 ServerSideValidationHandler="ServerSideValidationHandler"
+                 Version="CaptchaConfiguration.Version.V3"
+                 Theme="CaptchaConfiguration.Theme.Light"
+                 Language="CaptchaLanguages.EnglishUK"
+                 DefaultAction="DefaultTestAction"
+                 RenderOnLoad="false"
+>
+</GoogleRecaptcha>
+
+<div class="form-group">
+    <label for="actionName">Action</label>
+    <input type="text" id="actionName" @bind-value="Action" class="form-control" />
+    <small id="actionHelp" class="form-text text-muted">The Captcha V3 action name</small>
+</div>
+<button class="btn btn-primary" @onclick="IncrementCount" disabled="@Disabled">Click me</button>
+
+@code {
+
+    void TimeOutCallBack(CaptchaTimeOutEventArgs e)
+    {
+        Disabled = true;
+        Console.WriteLine($"Captcha Time Out with message {e.ErrorMessage}");
+        errorMessage = $"Captcha Timeout: {e.ErrorMessage}";
+    }
+
+
+    void SuccessCallBack(CaptchaSuccessEventArgs e)
+    {
+        Disabled = false;
+
+        captchaResponse = e.CaptchaResponse;
+        //Make your web call to your backend with your action, then validate the captcha response
+
+        base.StateHasChanged();
+    }
+
+    GoogleRecaptcha captcha;
+    private string errorMessage = string.Empty;
+    private string captchaResponse = string.Empty;
+
+    private int currentCount = 0;
+
+    private bool Disabled = false;
+    
+    private string Action = "/CountUp";
+
+    private async Task IncrementCount()
+    {
+        Disabled = true;
+        //Calls the captcha on the action execution
+        await captcha.ExecuteV3WithActionAsync(Action);
+        currentCount++;
+    }
+
+    private void ServerSideValidationError(CaptchaServerSideValidationErrorEventArgs e)
+    {
+        errorMessage = $"Captcha server side validation error: {e.ErrorMessage}";
+    }
+
+    /// <summary>
+    /// Captcha Verification Should be done by an internal api which holds the secret key
+    /// </summary>
+    /// <returns></returns>
+    private async Task<ServerSideCaptchaValidationResultModel> ServerSideValidationHandler(ServerSideCaptchaValidationRequestModel requestModel)
+    {
+        using var httpClient = new HttpClient();
+
+        await Task.Delay(3000);
+        //var apiResult = await httpClient.GetFromJsonAsync<GoogleCaptchaCheckResponseResult>($"https://localhost:7113/VerifyCaptcha?token={requestModel.CaptchaResponse}");
+
+        return new ServerSideCaptchaValidationResultModel(true, "Success");
+
+        // return new ServerSideCaptchaValidationResultModel(apiResult.Success, string.Join("\n",apiResult.ErrorCodes ?? new List<string>(){"No Error"}));
+    }
+}
