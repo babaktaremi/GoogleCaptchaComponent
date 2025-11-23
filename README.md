@@ -18,19 +18,6 @@
 
 -Supports Server Side captcha response validation flow
 
-## Release History
-
-**-V1:** : Experimental. Lots of bugs and **now depricated**
-
-**-V2:** : Major Bug Fixes. Interface clean up and added support for events in order to be more flexible and other devs can handle more customized scenarios. But this version also included some major bugs and the method provided for captcha validation wasn't so straight forward. Also the Server side validation flow using secret key was not present and users had to implement most of this feature themselves. **Depricated and no longer supported**
-
-**-V3 :** :  Duplicate and redundant code got removed. Configuration now has more options and I got rid of most of the bugs. This version also supports reCaptcha V3 and now you have the option to use v2 or v3 according to your need. This version is useful for projects that have been developed using NET 7 and above
-
-**-V4 :** Update project to NET 8 . Theme configuration added and now both V2 and V3 can be used in the same project and different pages (based on your needs you can use V2 in one page and V3 in another page). Also server side validation is required for both V2 and V3 in this version . This version also have some minor breaking changes. So keep that in mind when updating.
-
-**-V5 :** Added "Action" parameter for V3 methods
-
-**future:** There is a long way ahead. Keep posted for more updates and features. I think about version 5 all major updates will have huge breaking changes. I will continue supporting and updating this project until either I'm too old for it or an official solution is available for it. 
 
 ## Intallation
  
