@@ -13,7 +13,7 @@ window.loadScript = function (scriptPath) {
         // create JS library script element
         var script = document.createElement("script");
 
-        if (scriptPath === "https://www.google.com/recaptcha/api.js") {
+        if (scriptPath === "https://www.google.com/recaptcha/enterprise.js") {
             script.src = scriptPath + "?render=explicit";
         }
    

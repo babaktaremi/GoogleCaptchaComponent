@@ -14,7 +14,10 @@
     <Title>Blazor Google Captcha Component</Title>
     <Product>$(AssemblyName)-Blazor</Product>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageReleaseNotes>Added support for .NET9 and .NET10</PackageReleaseNotes>
+    <PackageReleaseNotes>
+    -Added support for .NET9 and .NET10
+    -Updated APIs to align with the latest Google reCAPTCHA standards
+    </PackageReleaseNotes>
     <Copyright>Copyright © Babak Taremi</Copyright>
   </PropertyGroup>
 
